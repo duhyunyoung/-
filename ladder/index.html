@@ -1,0 +1,1253 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#0b0e1c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>사다리 타기 · Coding Gamer</title>
+<style>
+  :root{
+    --bg:#0b0e1c;
+    --card:#151a33;
+    --card2:#1b2142;
+    --line:#2b3463;
+    --txt:#e9edff;
+    --dim:#98a2cc;
+    --gold:#ffd166;
+    --mint:#4dd4ac;
+    --pink:#ff5c8a;
+    --blue:#5aa9ff;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;height:100%}
+  body{
+    background:radial-gradient(130% 90% at 50% -10%, #1d2559 0%, #0e1226 48%, #070912 100%);
+    color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Malgun Gothic",system-ui,sans-serif;
+    overscroll-behavior:none;
+    -webkit-font-smoothing:antialiased;
+  }
+  #app{
+    position:relative;
+    height:100vh;
+    height:100dvh;
+    width:100%;
+    overflow:hidden;
+  }
+  .screen{
+    position:absolute;inset:0;
+    display:none;
+    flex-direction:column;
+    padding-top:env(safe-area-inset-top);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .screen.on{display:flex}
+
+  /* ---------- 공통 ---------- */
+  .badge{
+    display:inline-block;
+    font-size:10px;letter-spacing:.18em;font-weight:800;
+    color:#9fb4ff;
+    border:1px solid #35407a;
+    border-radius:999px;
+    padding:4px 10px;
+    background:rgba(90,169,255,.08);
+  }
+  .primary{
+    appearance:none;border:0;
+    background:linear-gradient(180deg,#6ee7ff 0%,#5aa9ff 45%,#7c6cff 100%);
+    color:#08122b;
+    font-weight:900;
+    font-size:17px;
+    letter-spacing:-.01em;
+    border-radius:16px;
+    min-height:54px;
+    padding:0 18px;
+    box-shadow:0 8px 20px rgba(90,169,255,.28), inset 0 1px 0 rgba(255,255,255,.5);
+    touch-action:manipulation;
+  }
+  .primary:active{transform:translateY(1px) scale(.995)}
+  .primary:disabled{filter:grayscale(.55) brightness(.8);box-shadow:none;color:#c7d2f5}
+  .primary.big{min-height:58px;font-size:18px;width:100%}
+  .ghost{
+    appearance:none;
+    background:rgba(255,255,255,.06);
+    color:#cfd8ff;
+    border:1px solid var(--line);
+    border-radius:15px;
+    min-height:48px;
+    font-size:15px;font-weight:700;
+    padding:0 16px;
+    touch-action:manipulation;
+  }
+  .ghost:active{background:rgba(255,255,255,.11)}
+  .ghost.wide{width:100%}
+  .icon-btn{
+    appearance:none;border:1px solid var(--line);
+    background:rgba(255,255,255,.05);
+    color:#cfd8ff;
+    width:40px;height:40px;border-radius:12px;
+    font-size:20px;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+    touch-action:manipulation;
+  }
+
+  /* ---------- 설정 화면 ---------- */
+  #screen-setup{overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .setup-head{padding:22px 20px 8px;text-align:center;flex:0 0 auto}
+  .setup-head h1{
+    margin:12px 0 6px;
+    font-size:27px;letter-spacing:-.03em;
+    background:linear-gradient(180deg,#ffffff,#a9c3ff);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .setup-head p{margin:0;color:var(--dim);font-size:13px;line-height:1.55}
+  .setup-body{padding:14px 18px 8px;display:flex;flex-direction:column;gap:18px;flex:1 0 auto}
+  .field > label,.col-title{
+    display:block;font-size:12px;font-weight:800;color:#8f9bc9;
+    letter-spacing:.04em;margin-bottom:8px;
+  }
+  .seg{display:flex;gap:8px}
+  .seg button{
+    flex:1;appearance:none;
+    background:var(--card);border:1px solid var(--line);
+    color:#aab5e0;font-size:16px;font-weight:800;
+    height:46px;border-radius:13px;touch-action:manipulation;
+  }
+  .seg button.on{
+    background:linear-gradient(180deg,rgba(110,231,255,.22),rgba(124,108,255,.24));
+    border-color:#5f7cf5;color:#fff;
+    box-shadow:0 0 0 1px rgba(95,124,245,.5) inset;
+  }
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chips button{
+    appearance:none;
+    background:rgba(255,255,255,.05);
+    border:1px solid var(--line);
+    color:#c3cdf0;
+    font-size:13px;font-weight:700;
+    padding:9px 12px;border-radius:999px;
+    touch-action:manipulation;
+  }
+  .chips button:active{background:rgba(255,255,255,.12)}
+  .prow-head{display:flex;gap:8px;margin:0 2px 6px;font-size:11px;font-weight:800;color:#7c88b8}
+  .prow-head span:first-child{flex:1}
+  .prow-head span:last-child{flex:1}
+  .prow{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .prow .dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto;box-shadow:0 0 0 3px rgba(255,255,255,.06)}
+  .prow .arw{color:#5d689a;font-size:12px;flex:0 0 auto}
+  .prow input{
+    flex:1 1 0;min-width:0;
+    background:var(--card);
+    border:1px solid var(--line);
+    color:var(--txt);
+    border-radius:12px;
+    height:44px;padding:0 12px;
+    font-size:16px; /* iOS 확대 방지 */
+    font-family:inherit;
+  }
+  .prow input::placeholder{color:#5b659a}
+  .prow input:focus{outline:none;border-color:#5f7cf5;background:#1a2044}
+  .hint{color:#6f7aa8;font-size:12px;line-height:1.5;margin:0 2px}
+  .setup-foot{
+    flex:0 0 auto;
+    padding:12px 18px 14px;
+    background:linear-gradient(180deg,rgba(11,14,28,0),rgba(11,14,28,.92) 32%);
+    position:sticky;bottom:0;
+  }
+
+  /* ---------- 게임 화면 ---------- */
+  #screen-game{padding:0}
+  .topbar{
+    flex:0 0 auto;
+    display:flex;align-items:center;gap:10px;
+    padding:calc(8px + env(safe-area-inset-top)) 14px 8px;
+  }
+  .tb-mid{flex:1;min-width:0;text-align:center}
+  .tb-label{font-size:10px;font-weight:800;letter-spacing:.12em;color:#7f8bbd}
+  .tb-name{
+    font-size:16px;font-weight:900;letter-spacing:-.02em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .coin-chip{
+    display:flex;align-items:center;gap:5px;
+    background:rgba(255,209,102,.1);
+    border:1px solid rgba(255,209,102,.35);
+    color:var(--gold);
+    border-radius:999px;
+    padding:7px 12px;
+    font-size:15px;font-weight:900;
+    min-width:64px;justify-content:center;
+  }
+  .coin-chip b{font-variant-numeric:tabular-nums}
+  .stage{
+    position:relative;
+    flex:1 1 auto;
+    min-height:0;
+    margin:2px 6px 0;
+    overflow:hidden;
+  }
+  #ladder{display:block;width:100%;height:100%;touch-action:manipulation}
+  .band{fill:rgba(255,209,102,.075);stroke:rgba(255,209,102,.22);stroke-width:1;stroke-dasharray:5 5}
+  .rail{stroke:#aebcf5;stroke-width:7;stroke-linecap:round;opacity:.75}
+  .rung{stroke:var(--gold);stroke-width:7;stroke-linecap:round;opacity:.92}
+  .pname{font-size:13px;font-weight:800;fill:#dfe6ff;text-anchor:middle}
+  .pname.done{fill:#7d88b8}
+  .rres{font-size:12px;font-weight:700;fill:#a9b6e6;text-anchor:middle}
+  .rres.hit{fill:var(--gold)}
+  .tok{cursor:pointer}
+  .tok-halo{fill:none;stroke:#fff;stroke-width:0;opacity:0}
+  .tok.sel .tok-halo{stroke:#fff;stroke-width:2;opacity:.35}
+  .tok-body{stroke:rgba(255,255,255,.9);stroke-width:2}
+  .tok.sel .tok-body{stroke-width:2.5}
+  .tok-num{font-size:11px;font-weight:900;fill:#0b0e1c;text-anchor:middle;pointer-events:none}
+  .trail{fill:none;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;opacity:.5}
+  .shop-pill{
+    position:absolute;right:2px;
+    transform:translateY(-50%);
+    display:flex;align-items:center;gap:3px;
+    font-size:11px;font-weight:900;color:#0b0e1c;
+    background:linear-gradient(180deg,#ffe6a3,#ffc94d);
+    border-radius:9px;
+    padding:4px 7px;
+    box-shadow:0 2px 8px rgba(255,201,77,.28);
+    pointer-events:none;
+  }
+  .shop-pill span{font-size:10px}
+  .bottom{
+    flex:0 0 auto;
+    display:flex;gap:10px;align-items:stretch;
+    padding:8px 14px calc(12px + env(safe-area-inset-bottom));
+  }
+  .bottom .primary{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .btn-shuffle{
+    width:56px;min-height:54px;border-radius:16px;
+    appearance:none;background:rgba(255,255,255,.06);
+    border:1px solid var(--line);color:#cfd8ff;font-size:20px;
+    touch-action:manipulation;
+  }
+  .btn-shuffle:disabled{opacity:.35}
+
+  /* ---------- 결과 화면 ---------- */
+  #screen-result{overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .result-list{padding:6px 16px 10px;display:flex;flex-direction:column;gap:9px}
+  .rrow{
+    display:flex;align-items:center;gap:10px;
+    background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:12px 13px;
+  }
+  .rrow .dot{width:11px;height:11px;border-radius:50%;flex:0 0 auto}
+  .rmid{flex:1;min-width:0}
+  .rname{font-size:14px;font-weight:900;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ritems{font-size:11px;color:#8b96c6;margin-top:3px;line-height:1.45}
+  .rright{text-align:right;flex:0 0 auto;max-width:44%}
+  .ranswer{
+    font-size:15px;font-weight:900;color:var(--gold);
+    word-break:keep-all;line-height:1.25;
+  }
+  .rcoins{font-size:12px;font-weight:800;color:#c9d2f5;margin-top:3px}
+
+  /* ---------- 모달 ---------- */
+  .modal{
+    position:fixed;inset:0;z-index:50;
+    display:none;
+    align-items:flex-end;justify-content:center;
+    background:rgba(4,6,16,.66);
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  }
+  .modal.on{display:flex}
+  .sheet{
+    width:100%;max-width:520px;
+    max-height:92%;
+    overflow-y:auto;-webkit-overflow-scrolling:touch;
+    background:linear-gradient(180deg,#1a2145,#11152c 60%,#0e1224);
+    border:1px solid #2c3566;
+    border-bottom:0;
+    border-radius:24px 24px 0 0;
+    padding:8px 18px calc(18px + env(safe-area-inset-bottom));
+    box-shadow:0 -12px 40px rgba(0,0,0,.55);
+    animation:sheetUp .22s ease-out;
+  }
+  @keyframes sheetUp{from{transform:translateY(16px);opacity:.6}to{transform:translateY(0);opacity:1}}
+  .sheet-grab{width:42px;height:4px;border-radius:99px;background:#3a4479;margin:4px auto 12px}
+  .shop-head{text-align:center;margin-bottom:12px}
+  .shop-title{font-size:19px;font-weight:900;letter-spacing:-.02em}
+  .shop-sub{font-size:12px;color:#8b96c6;margin-top:4px}
+  .coinbar{
+    display:flex;align-items:center;justify-content:space-between;
+    background:rgba(255,209,102,.1);
+    border:1px solid rgba(255,209,102,.3);
+    border-radius:14px;padding:11px 14px;
+    font-size:14px;font-weight:800;color:#ffe3a1;
+    margin-bottom:14px;
+  }
+  .coinbar b{font-size:19px;color:var(--gold);font-variant-numeric:tabular-nums}
+  .dice-box{
+    display:flex;flex-direction:column;align-items:center;gap:12px;
+    padding:6px 0 16px;
+  }
+  .dice{
+    width:82px;height:82px;border-radius:18px;
+    background:linear-gradient(180deg,#ffffff,#dfe6ff);
+    display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);
+    padding:11px;gap:4px;
+    box-shadow:0 6px 18px rgba(0,0,0,.35), inset 0 -3px 0 rgba(120,140,200,.25);
+  }
+  .dice span{border-radius:50%;background:transparent;transition:background .06s}
+  .dice span.on{background:#161c3a}
+  .dice.rolling{animation:diceRoll .5s linear infinite}
+  @keyframes diceRoll{0%{transform:rotate(0) scale(1)}50%{transform:rotate(9deg) scale(1.06)}100%{transform:rotate(0) scale(1)}}
+  .dice-msg{min-height:20px;font-size:13px;color:#8f9bc9;text-align:center;font-weight:700}
+  .dice-msg .good{color:var(--mint);font-size:15px}
+  .dice-msg .sad{color:#ffa9a9;font-size:15px}
+  .dice-box .primary{width:100%}
+  .shop-items-title{
+    font-size:12px;font-weight:800;color:#8f9bc9;letter-spacing:.03em;
+    margin:6px 0 8px;display:flex;justify-content:space-between;align-items:center;
+  }
+  .shop-items-title span{font-weight:600;color:#5f6a9c}
+  .shop-items{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+  .item{
+    display:flex;align-items:center;gap:10px;
+    background:rgba(255,255,255,.045);
+    border:1px solid #262e57;
+    border-radius:14px;padding:10px 11px;
+  }
+  .item.owned{border-color:rgba(77,212,172,.45);background:rgba(77,212,172,.08)}
+  .item-ic{
+    width:38px;height:38px;border-radius:11px;flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;
+    font-size:19px;background:rgba(255,255,255,.07);
+  }
+  .item-mid{flex:1;min-width:0}
+  .item-name{font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .item-note{font-size:11px;color:#7b86b6;margin-top:2px}
+  .buy{
+    appearance:none;border:1px solid #3a4a90;
+    background:linear-gradient(180deg,rgba(90,169,255,.28),rgba(124,108,255,.28));
+    color:#e9efff;font-weight:900;font-size:13px;
+    border-radius:11px;padding:9px 12px;min-width:74px;
+    touch-action:manipulation;
+  }
+  .buy:active{transform:translateY(1px)}
+  .buy:disabled{opacity:.45}
+  .buy.off{border-color:#2a3161;background:rgba(255,255,255,.04);color:#7d87b5}
+  .buy.done{border-color:rgba(77,212,172,.5);background:rgba(77,212,172,.16);color:#8bf0cd}
+  .ghost:disabled{opacity:.5}
+
+  /* 결과 모달 */
+  .res-emoji{text-align:center;font-size:44px;line-height:1;margin:6px 0 10px}
+  .res-name{text-align:center;font-size:14px;color:#a3aed8;font-weight:700}
+  .res-answer{
+    text-align:center;font-size:26px;font-weight:900;letter-spacing:-.03em;
+    color:var(--gold);margin:6px 0 16px;word-break:keep-all;line-height:1.25;
+  }
+  .res-stats{
+    display:flex;gap:8px;margin-bottom:12px;
+  }
+  .stat{
+    flex:1;text-align:center;
+    background:rgba(255,255,255,.05);border:1px solid #262e57;
+    border-radius:14px;padding:10px 6px;
+  }
+  .stat b{display:block;font-size:18px;font-variant-numeric:tabular-nums}
+  .stat span{font-size:11px;color:#8b96c6;font-weight:700}
+  .inv-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;justify-content:center}
+  .inv{
+    font-size:12px;font-weight:700;color:#cfe6ff;
+    background:rgba(90,169,255,.13);
+    border:1px solid #32407a;
+    border-radius:999px;padding:6px 10px;
+  }
+  .inv.empty{color:#7d87b5;background:rgba(255,255,255,.04);border-color:#262e57}
+  .sheet .primary + .ghost{margin-top:8px}
+  .res-total{
+    text-align:center;font-size:13px;color:#9aa5d3;font-weight:700;
+    margin:0 0 4px;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ============ 설정 ============ -->
+  <section id="screen-setup" class="screen on">
+    <div class="setup-head">
+      <div class="badge">CODING GAMER</div>
+      <h1>🪜 사다리 타기</h1>
+      <p>사다리 중간 상점 3곳에서 주사위를 굴려 코인을 모으고,<br>아이템을 사면서 내려갑니다.<br><b>5 → 🪙1 · 6 → 🪙5</b></p>
+    </div>
+    <div class="setup-body">
+      <div class="field">
+        <label>인원 수</label>
+        <div class="seg" id="seg-count"></div>
+      </div>
+      <div class="field">
+        <label>빠른 프리셋</label>
+        <div class="chips" id="presets"></div>
+      </div>
+      <div class="field">
+        <div class="prow-head"><span>출발 (이름)</span><span>도착 (결과)</span></div>
+        <div id="rows"></div>
+      </div>
+      <p class="hint">비워두면 자동으로 채워집니다. 결과는 당첨 항목이 아니어도 됩니다.</p>
+    </div>
+    <div class="setup-foot">
+      <button id="btn-start" class="primary big">사다리 만들고 시작 ▶</button>
+    </div>
+  </section>
+
+  <!-- ============ 게임 ============ -->
+  <section id="screen-game" class="screen">
+    <div class="topbar">
+      <button class="icon-btn" id="btn-back" aria-label="설정으로 돌아가기">‹</button>
+      <div class="tb-mid">
+        <div class="tb-label">현재 차례</div>
+        <div class="tb-name" id="tb-name">-</div>
+      </div>
+      <div class="coin-chip"><span>🪙</span><b id="tb-coins">0</b></div>
+    </div>
+    <div class="stage" id="stage">
+      <svg id="ladder" xmlns="http://www.w3.org/2000/svg" aria-label="사다리"></svg>
+    </div>
+    <div class="bottom">
+      <button class="btn-shuffle" id="btn-shuffle" aria-label="사다리 다시 섞기">🔀</button>
+      <button class="primary" id="btn-walk">▶ 출발!</button>
+    </div>
+  </section>
+
+  <!-- ============ 최종 결과 ============ -->
+  <section id="screen-result" class="screen">
+    <div class="setup-head">
+      <div class="badge">CODING GAMER</div>
+      <h1>🏁 최종 결과</h1>
+      <p class="res-total" id="res-total"></p>
+    </div>
+    <div class="result-list" id="result-list"></div>
+    <div class="setup-foot">
+      <button id="btn-again" class="primary big">🔄 다시 하기</button>
+      <button id="btn-new" class="ghost wide" style="margin-top:8px">참가자 · 결과 다시 설정</button>
+    </div>
+  </section>
+
+</div>
+
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ---------------- 기본 데이터 ---------------- */
+  var COLORS = ['#ff5c8a','#ffb703','#4dd4ac','#5aa9ff','#b585ff','#ff8a4d'];
+  var ITEMS = [
+    {id:'A', emoji:'🎁', name:'임시 아이템 A', price:1, note:'효과 추후 설정'},
+    {id:'B', emoji:'✨', name:'임시 아이템 B', price:3, note:'효과 추후 설정'},
+    {id:'C', emoji:'🏆', name:'임시 아이템 C', price:5, note:'효과 추후 설정'}
+  ];
+  var PRESETS = [
+    {label:'2명 · 내기', names:['나','너'], results:['커피 사기','통과']},
+    {label:'4명 · 벌칙', names:['김철수','이영희','박민수','최지수'], results:['커피 사기','설거지 당번','노래 1곡','통과']},
+    {label:'6명 · 팀 나누기', names:['A','B','C','D','E','F'], results:['1조','2조','1조','2조','1조','2조']}
+  ];
+  var LEVELS = 12;
+  var SHOP_LEVELS = [3, 6, 9];
+
+  var S = {
+    count: 4,
+    names: [],
+    results: [],
+    players: [],
+    rungs: [],
+    selected: 0,
+    geom: null,
+    shop: null,
+    locked: false
+  };
+
+  function $(id){ return document.getElementById(id); }
+  function esc(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+    });
+  }
+  function chars(s){ return Array.from(String(s)); }
+  function fit(s, max){
+    var a = chars(s);
+    if(a.length <= max) return s;
+    return a.slice(0, Math.max(1, max-1)).join('') + '…';
+  }
+  function wrap2(s, max){
+    var a = chars(s);
+    if(a.length <= max) return [s];
+    var l1 = a.slice(0, max).join('');
+    var l2 = a.slice(max, max*2).join('');
+    if(a.length > max*2) l2 = chars(l2).slice(0, Math.max(1,max-1)).join('') + '…';
+    return [l1, l2];
+  }
+
+  /* ---------------- 설정 화면 ---------------- */
+  function initSeg(){
+    var box = $('seg-count');
+    box.innerHTML = '';
+    for(var n = 2; n <= 6; n++){
+      (function(n){
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = n;
+        b.dataset.n = n;
+        if(n === S.count) b.className = 'on';
+        b.addEventListener('click', function(){ setCount(n); });
+        box.appendChild(b);
+      })(n);
+    }
+  }
+  function initPresets(){
+    var box = $('presets');
+    box.innerHTML = '';
+    PRESETS.forEach(function(p, i){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = p.label;
+      b.addEventListener('click', function(){ applyPreset(i); });
+      box.appendChild(b);
+    });
+  }
+  function setCount(n){
+    S.count = n;
+    while(S.names.length < n) S.names.push('');
+    while(S.results.length < n) S.results.push('');
+    S.names.length = n;
+    S.results.length = n;
+    initSeg();
+    renderRows();
+  }
+  function applyPreset(i){
+    var p = PRESETS[i];
+    S.count = p.names.length;
+    S.names = p.names.slice();
+    S.results = p.results.slice();
+    initSeg();
+    renderRows();
+  }
+  function renderRows(){
+    var box = $('rows');
+    var html = '';
+    for(var i = 0; i < S.count; i++){
+      html += '<div class="prow">'
+        + '<span class="dot" style="background:' + COLORS[i] + '"></span>'
+        + '<input class="in-name" data-i="' + i + '" maxlength="12" placeholder="참가자 ' + (i+1) + '" value="' + esc(S.names[i] || '') + '">'
+        + '<span class="arw">→</span>'
+        + '<input class="in-res" data-i="' + i + '" maxlength="16" placeholder="결과 ' + (i+1) + '" value="' + esc(S.results[i] || '') + '">'
+        + '</div>';
+    }
+    box.innerHTML = html;
+    Array.prototype.forEach.call(box.querySelectorAll('.in-name'), function(inp){
+      inp.addEventListener('input', function(){
+        S.names[+inp.dataset.i] = inp.value;
+      });
+    });
+    Array.prototype.forEach.call(box.querySelectorAll('.in-res'), function(inp){
+      inp.addEventListener('input', function(){
+        S.results[+inp.dataset.i] = inp.value;
+      });
+    });
+  }
+
+  /* ---------------- 사다리 생성 ---------------- */
+  function shuffle(a){
+    for(var i = a.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function makeRungs(n, levels){
+    var out = [];
+    for(var l = 0; l < levels; l++){
+      var pairs = [];
+      for(var c = 0; c < n - 1; c++) pairs.push(c);
+      shuffle(pairs);
+      var used = [];
+      for(var k = 0; k < n; k++) used.push(false);
+      var row = [];
+      for(var p = 0; p < pairs.length; p++){
+        var a = pairs[p];
+        if(used[a] || used[a+1]) continue;
+        if(Math.random() < 0.62){
+          used[a] = true; used[a+1] = true;
+          row.push({a:a, b:a+1});
+        }
+      }
+      row.sort(function(x, y){ return x.a - y.a; });
+      out.push(row);
+    }
+    return out;
+  }
+  function rungAt(l, c){
+    var row = S.rungs[l] || [];
+    for(var i = 0; i < row.length; i++){
+      if(row[i].a === c || row[i].b === c) return row[i];
+    }
+    return null;
+  }
+  function buildPath(startCol){
+    var g = S.geom;
+    var c = startCol;
+    var pts = [{x:g.x(c), y:g.tokenY, level:-1}];
+    for(var l = 0; l < LEVELS; l++){
+      var y = g.yLevel(l);
+      var r = rungAt(l, c);
+      if(r){
+        pts.push({x:g.x(c), y:y, level:l});
+        c = (r.a === c) ? r.b : r.a;
+        pts.push({x:g.x(c), y:y, level:l});
+      } else {
+        pts.push({x:g.x(c), y:y, level:l});
+      }
+    }
+    pts.push({x:g.x(c), y:g.yBot, level:LEVELS});
+    return {pts:pts, endCol:c};
+  }
+
+  /* ---------------- 레이아웃 & 그리기 ---------------- */
+  function layout(){
+    var stage = $('stage');
+    var W = Math.max(240, stage.clientWidth || 360);
+    var H = Math.max(300, stage.clientHeight || 480);
+    var n = S.count;
+    var padL = 20, padR = 54;
+    var usable = Math.max(40, W - padL - padR);
+    var colW = n > 1 ? usable / (n - 1) : usable;
+    var yTop = 58;
+    var yBot = H - 64;
+    var gap = Math.max(16, (yBot - yTop) / (LEVELS + 1));
+    S.geom = {
+      W:W, H:H, n:n, padL:padL, padR:padR, colW:colW,
+      nameY:20, tokenY:44, yTop:yTop, yBot:yBot, gap:gap,
+      x:function(c){ return padL + colW * c; },
+      yLevel:function(l){ return yTop + gap * (l + 1); }
+    };
+  }
+
+  function draw(){
+    var g = S.geom;
+    var svg = $('ladder');
+    svg.setAttribute('viewBox', '0 0 ' + g.W + ' ' + g.H);
+    var nameMax = Math.max(2, Math.floor(g.colW / 13));
+    var resMax = Math.max(2, Math.floor(g.colW / 11.5));
+    var h = '';
+
+    /* 상점 구간 */
+    for(var i = 0; i < SHOP_LEVELS.length; i++){
+      var y = g.yLevel(SHOP_LEVELS[i]);
+      h += '<rect class="band" x="0" y="' + (y - 15) + '" width="' + g.W + '" height="30" rx="9"></rect>';
+    }
+
+    /* 세로 기둥 */
+    for(var c = 0; c < g.n; c++){
+      h += '<line class="rail" x1="' + g.x(c) + '" y1="' + g.yTop + '" x2="' + g.x(c) + '" y2="' + g.yBot + '"></line>';
+    }
+
+    /* 가로줄 */
+    for(var l = 0; l < LEVELS; l++){
+      var yy = g.yLevel(l);
+      var row = S.rungs[l] || [];
+      for(var r = 0; r < row.length; r++){
+        h += '<line class="rung" x1="' + g.x(row[r].a) + '" y1="' + yy + '" x2="' + g.x(row[r].b) + '" y2="' + yy + '"></line>';
+      }
+    }
+
+    /* 이동 자취 */
+    h += '<g id="trails"></g>';
+
+    /* 이름 / 결과 */
+    for(var p = 0; p < g.n; p++){
+      var nm = S.players[p] ? S.players[p].name : S.names[p];
+      var done = S.players[p] && S.players[p].finished;
+      h += '<text class="pname' + (done ? ' done' : '') + '" x="' + g.x(p) + '" y="' + g.nameY + '">' + esc(fit(nm || '', nameMax)) + '</text>';
+
+      var rs = S.results[p] || '';
+      var lines = wrap2(rs, resMax);
+      var hit = done && S.players[p].endCol === p;
+      var y1 = lines.length > 1 ? g.H - 40 : g.H - 28;
+      for(var li = 0; li < lines.length; li++){
+        h += '<text class="rres' + (hit ? ' hit' : '') + '" x="' + g.x(p) + '" y="' + (y1 + li * 16) + '">' + esc(lines[li]) + '</text>';
+      }
+    }
+
+    /* 말 */
+    h += '<g id="tokens"></g>';
+
+    svg.innerHTML = h;
+
+    /* 상점 표시 */
+    var stage = $('stage');
+    Array.prototype.forEach.call(stage.querySelectorAll('.shop-pill'), function(el){ el.remove(); });
+    for(var s = 0; s < SHOP_LEVELS.length; s++){
+      var pill = document.createElement('div');
+      pill.className = 'shop-pill';
+      pill.style.top = g.yLevel(SHOP_LEVELS[s]) + 'px';
+      pill.innerHTML = '🏪<span>' + (s + 1) + '</span>';
+      stage.appendChild(pill);
+    }
+
+    renderTokens();
+    redrawTrails();
+  }
+
+  function renderTokens(){
+    var g = S.geom;
+    var box = document.getElementById('tokens');
+    if(!box) return;
+    var h = '';
+    for(var i = 0; i < S.players.length; i++){
+      var p = S.players[i];
+      var pos = p.pos || {x:g.x(i), y:g.tokenY};
+      h += '<g class="tok' + (S.selected === i && !p.finished ? ' sel' : '') + '" data-i="' + i + '" transform="translate(' + pos.x.toFixed(1) + ',' + pos.y.toFixed(1) + ')">'
+        + '<circle class="tok-halo" r="17"></circle>'
+        + '<circle class="tok-body" r="12" fill="' + p.color + '"></circle>'
+        + '<text class="tok-num" y="4">' + (i + 1) + '</text>'
+        + '</g>';
+    }
+    box.innerHTML = h;
+  }
+
+  function tokenEl(i){
+    return document.querySelector('.tok[data-i="' + i + '"]');
+  }
+  function setTokenPos(i, x, y){
+    var el = tokenEl(i);
+    if(el) el.setAttribute('transform', 'translate(' + x.toFixed(1) + ',' + y.toFixed(1) + ')');
+    if(S.players[i]) S.players[i].pos = {x:x, y:y};
+  }
+
+  function redrawTrails(){
+    var box = document.getElementById('trails');
+    if(!box) return;
+    box.innerHTML = '';
+    for(var i = 0; i < S.players.length; i++){
+      var t = S.players[i].trail;
+      if(!t || t.length < 2) continue;
+      var pts = t.map(function(p){ return p.x.toFixed(1) + ',' + p.y.toFixed(1); }).join(' ');
+      var pl = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+      pl.setAttribute('class', 'trail');
+      pl.setAttribute('points', pts);
+      pl.setAttribute('stroke', S.players[i].color);
+      box.appendChild(pl);
+    }
+  }
+
+  /* ---------------- 걷기 애니메이션 ---------------- */
+  var walk = null;
+  var raf = null;
+  var lastTs = 0;
+
+  function startWalk(pi){
+    var p = S.players[pi];
+    if(p.finished) return;
+    var path = buildPath(i0(pi));
+    p.path = path.pts;
+    p.endCol = path.endCol;
+    p.trail = [{x:path.pts[0].x, y:path.pts[0].y}];
+    walk = {pi:pi, pts:path.pts, si:0, off:0, speed:230, paused:false, done:false};
+    S.selected = pi;
+    S.locked = true;
+    $('btn-walk').disabled = true;
+    $('btn-shuffle').disabled = true;
+    updateTopbar();
+    redrawTrails();
+    lastTs = 0;
+    if(!raf) raf = requestAnimationFrame(tick);
+  }
+  function i0(pi){ return S.players[pi].startCol; }
+
+  function tick(ts){
+    raf = requestAnimationFrame(tick);
+    if(!walk || walk.paused || walk.done){ lastTs = ts; return; }
+    if(!lastTs){ lastTs = ts; return; }
+    var dt = Math.min(0.05, (ts - lastTs) / 1000);
+    lastTs = ts;
+    var remain = walk.speed * dt;
+    var pts = walk.pts;
+    var moved = false;
+
+    while(remain > 0 && walk.si < pts.length - 1){
+      var a = pts[walk.si], b = pts[walk.si + 1];
+      var len = Math.hypot(b.x - a.x, b.y - a.y) || 0.0001;
+      var left = len - walk.off;
+      if(remain < left){
+        walk.off += remain;
+        remain = 0;
+        moved = true;
+        break;
+      }
+      remain -= left;
+      walk.si++;
+      walk.off = 0;
+      moved = true;
+      var pt = pts[walk.si];
+      S.players[walk.pi].trail.push({x:pt.x, y:pt.y});
+
+      if(isShopStop(walk.si)){
+        var shopIdx = SHOP_LEVELS.indexOf(pt.level);
+        var pl = S.players[walk.pi];
+        if(shopIdx >= 0 && !pl.shops[shopIdx].visited){
+          pl.shops[shopIdx].visited = true;
+          walk.paused = true;
+          walk.off = 0;
+          var cur = curPos();
+          setTokenPos(walk.pi, cur.x, cur.y);
+          redrawTrails();
+          showShop(walk.pi, shopIdx);
+          return;
+        }
+      }
+    }
+
+    if(moved){
+      var c = curPos();
+      setTokenPos(walk.pi, c.x, c.y);
+      redrawTrails();
+    }
+    if(walk.si >= pts.length - 1){
+      finishWalk();
+    }
+  }
+
+  function isShopStop(i){
+    var pts = walk.pts;
+    var p = pts[i];
+    if(SHOP_LEVELS.indexOf(p.level) < 0) return false;
+    var next = pts[i + 1];
+    return !next || next.level !== p.level;
+  }
+
+  function curPos(){
+    var pts = walk.pts;
+    var a = pts[walk.si];
+    var b = pts[walk.si + 1];
+    if(!b) return {x:a.x, y:a.y};
+    var len = Math.hypot(b.x - a.x, b.y - a.y) || 0.0001;
+    var t = Math.min(1, walk.off / len);
+    return {x:a.x + (b.x - a.x) * t, y:a.y + (b.y - a.y) * t};
+  }
+
+  function finishWalk(){
+    if(!walk) return;
+    var pi = walk.pi;
+    walk.done = true;
+    var p = S.players[pi];
+    p.finished = true;
+    p.result = S.results[p.endCol] || '';
+    var g = S.geom;
+    setTokenPos(pi, g.x(p.endCol), g.yBot);
+    var el = tokenEl(pi);
+    if(el) el.classList.remove('sel');
+    redrawTrails();
+    updateTopbar();
+    showPlayerResult(pi);
+  }
+
+  function abortWalk(){
+    if(walk){ walk.done = true; walk.paused = false; }
+    walk = null;
+    S.locked = false;
+  }
+
+  /* ---------------- 상점 모달 ---------------- */
+  function showShop(pi, si){
+    S.shop = {pi:pi, si:si};
+    var p = S.players[pi];
+    var st = p.shops[si];
+    var sheet = $('sheet');
+    sheet.innerHTML = ''
+      + '<div class="sheet-grab"></div>'
+      + '<div class="shop-head">'
+      + '  <div class="shop-title">🏪 상점 ' + (si + 1) + ' / 3</div>'
+      + '  <div class="shop-sub">' + esc(p.name) + ' · 사다리 중간 ' + (si + 1) + '번째 상점</div>'
+      + '</div>'
+      + '<div class="coinbar"><span>🪙 보유 코인</span><b id="m-coins">' + p.coins + '</b></div>'
+      + '<div class="dice-box">'
+      + '  <div class="dice" id="dice">' + '<span></span>'.repeat(9) + '</div>'
+      + '  <button class="primary" id="btn-roll">🎲 주사위 굴리기</button>'
+      + '  <div class="dice-msg" id="dice-msg">상점마다 1번! 5 → 🪙1 · 6 → 🪙5</div>'
+      + '</div>'
+      + '<div class="shop-items-title">상점 아이템 <span>테스트 슬롯 · 효과 추후 설정</span></div>'
+      + '<div class="shop-items" id="shop-items"></div>'
+      + '<button class="ghost wide" id="btn-resume">⬇ 계속 내려가기</button>';
+
+    setDice(st.rolled ? st.value : 1);
+    if(st.rolled){
+      var rb = $('btn-roll');
+      rb.disabled = true;
+      rb.textContent = '✔ 굴림 완료';
+      showDiceMessage(st.value, st.gain);
+    }
+    $('btn-roll').addEventListener('click', rollDice);
+    $('btn-resume').addEventListener('click', resumeWalk);
+    renderShopItems();
+    $('modal').classList.add('on');
+  }
+
+  function setDice(v){
+    var d = $('dice');
+    if(!d) return;
+    var map = {1:[4], 2:[0,8], 3:[0,4,8], 4:[0,2,6,8], 5:[0,2,4,6,8], 6:[0,2,3,5,6,8]};
+    var on = map[v] || [];
+    var kids = d.children;
+    for(var i = 0; i < kids.length; i++){
+      if(on.indexOf(i) >= 0) kids[i].classList.add('on');
+      else kids[i].classList.remove('on');
+    }
+  }
+
+  function showDiceMessage(v, gain){
+    var msg = $('dice-msg');
+    if(!msg) return;
+    if(v === 5) msg.innerHTML = '<b class="good">🎉 5! 코인 1개 획득</b>';
+    else if(v === 6) msg.innerHTML = '<b class="good">🎉 6! 코인 5개 획득</b>';
+    else msg.innerHTML = '<b class="sad">😅 ' + v + ' · 이번엔 코인 없음</b>';
+  }
+
+  function rollDice(){
+    var pi = S.shop.pi, si = S.shop.si;
+    var p = S.players[pi], st = p.shops[si];
+    if(st.rolled) return;
+    var btn = $('btn-roll');
+    var dice = $('dice');
+    var msg = $('dice-msg');
+    var rbtn = $('btn-resume');
+    btn.disabled = true;
+    if(rbtn) rbtn.disabled = true;
+    btn.textContent = '굴리는 중…';
+    dice.classList.add('rolling');
+    msg.textContent = '';
+    var n = 0;
+    var iv = setInterval(function(){
+      setDice(1 + Math.floor(Math.random() * 6));
+      n++;
+      if(n >= 12){
+        clearInterval(iv);
+        var v = 1 + Math.floor(Math.random() * 6);
+        setDice(v);
+        dice.classList.remove('rolling');
+        st.rolled = true;
+        st.value = v;
+        st.gain = (v === 5) ? 1 : (v === 6) ? 5 : 0;
+        p.coins += st.gain;
+        btn.textContent = '✔ 굴림 완료';
+        var mc = $('m-coins');
+        if(mc) mc.textContent = p.coins;
+        var rr = $('btn-resume');
+        if(rr) rr.disabled = false;
+        updateTopbar();
+        showDiceMessage(v, st.gain);
+        renderShopItems();
+      }
+    }, 70);
+  }
+
+  function renderShopItems(){
+    var pi = S.shop.pi, si = S.shop.si;
+    var p = S.players[pi], st = p.shops[si];
+    var box = $('shop-items');
+    if(!box) return;
+    var html = '';
+    for(var i = 0; i < ITEMS.length; i++){
+      var it = ITEMS[i];
+      var owned = st.bought.indexOf(it.id) >= 0;
+      var afford = p.coins >= it.price;
+      var cls = owned ? 'buy done' : (afford ? 'buy' : 'buy off');
+      var label = owned ? '구매 완료' : ('🪙 ' + it.price);
+      html += '<div class="item' + (owned ? ' owned' : '') + '">'
+        + '<div class="item-ic">' + it.emoji + '</div>'
+        + '<div class="item-mid"><div class="item-name">' + esc(it.name) + '</div>'
+        + '<div class="item-note">' + esc(it.note) + '</div></div>'
+        + '<button class="' + cls + '" data-item="' + it.id + '"' + (owned || !afford ? ' disabled' : '') + '>' + label + '</button>'
+        + '</div>';
+    }
+    box.innerHTML = html;
+    Array.prototype.forEach.call(box.querySelectorAll('button[data-item]'), function(b){
+      b.addEventListener('click', function(){ buyItem(b.dataset.item); });
+    });
+  }
+
+  function buyItem(itemId){
+    var pi = S.shop.pi, si = S.shop.si;
+    var p = S.players[pi], st = p.shops[si];
+    var it = null;
+    for(var i = 0; i < ITEMS.length; i++) if(ITEMS[i].id === itemId) it = ITEMS[i];
+    if(!it) return;
+    if(st.bought.indexOf(itemId) >= 0) return;
+    if(p.coins < it.price) return;
+    p.coins -= it.price;
+    st.bought.push(itemId);
+    p.items.push(itemId);
+    var mc2 = $('m-coins');
+    if(mc2) mc2.textContent = p.coins;
+    updateTopbar();
+    renderShopItems();
+  }
+
+  function resumeWalk(){
+    closeModal();
+    if(walk){
+      walk.paused = false;
+      lastTs = 0;
+      if(!raf) raf = requestAnimationFrame(tick);
+    }
+  }
+
+  /* ---------------- 결과 ---------------- */
+  function itemChips(list){
+    if(!list.length) return '<span class="inv empty">구매한 아이템 없음</span>';
+    var counts = {};
+    list.forEach(function(id){ counts[id] = (counts[id] || 0) + 1; });
+    var out = '';
+    for(var i = 0; i < ITEMS.length; i++){
+      var it = ITEMS[i];
+      if(!counts[it.id]) continue;
+      out += '<span class="inv">' + it.emoji + ' ' + esc(it.name) + (counts[it.id] > 1 ? ' ×' + counts[it.id] : '') + '</span>';
+    }
+    return out;
+  }
+
+  function showPlayerResult(pi){
+    var p = S.players[pi];
+    var remain = S.players.filter(function(x){ return !x.finished; }).length;
+    var sheet = $('sheet');
+    sheet.innerHTML = ''
+      + '<div class="sheet-grab"></div>'
+      + '<div class="res-emoji">🏁</div>'
+      + '<div class="res-name">' + esc(p.name) + ' 도착!</div>'
+      + '<div class="res-answer">' + esc(p.result) + '</div>'
+      + '<div class="res-stats">'
+      + '  <div class="stat"><b id="r-coins">' + p.coins + '</b><span>획득 코인</span></div>'
+      + '  <div class="stat"><b>' + p.items.length + '</b><span>보유 아이템</span></div>'
+      + '</div>'
+      + '<div class="inv-wrap">' + itemChips(p.items) + '</div>'
+      + (remain > 0
+          ? '<button class="primary big" id="btn-next">다음 사람 ▶ (' + remain + '명 남음)</button>'
+            + '<button class="ghost wide" id="btn-final">여기서 결과 보기</button>'
+          : '<button class="primary big" id="btn-final">🏁 최종 결과 보기</button>');
+    $('modal').classList.add('on');
+    if(remain > 0) $('btn-next').addEventListener('click', function(){ startNext(pi); });
+    $('btn-final').addEventListener('click', function(){ closeModal(); showFinal(); });
+  }
+
+  function startNext(fromPi){
+    var n = S.players.length;
+    var next = -1;
+    for(var k = 1; k <= n; k++){
+      var i = (fromPi + k) % n;
+      if(!S.players[i].finished){ next = i; break; }
+    }
+    if(next < 0){ closeModal(); showFinal(); return; }
+    closeModal();
+    S.selected = next;
+    updateTopbar();
+    startWalk(next);
+  }
+
+  function closeModal(){
+    $('modal').classList.remove('on');
+  }
+
+  function showFinal(){
+    S.locked = false;
+    var totalCoins = 0, totalItems = 0;
+    S.players.forEach(function(p){ totalCoins += p.coins; totalItems += p.items.length; });
+    $('res-total').innerHTML = '획득 코인 총합 <b style="color:var(--gold)">🪙 ' + totalCoins + '</b> · 아이템 ' + totalItems + '개';
+    var html = '';
+    S.players.forEach(function(p, i){
+      html += '<div class="rrow">'
+        + '<span class="dot" style="background:' + p.color + '"></span>'
+        + '<div class="rmid"><div class="rname">' + esc(p.name) + '</div>'
+        + '<div class="ritems">' + (p.items.length ? esc(p.items.map(function(id){
+            for(var x = 0; x < ITEMS.length; x++) if(ITEMS[x].id === id) return ITEMS[x].emoji + ' ' + ITEMS[x].name;
+            return id;
+          }).join(' · ')) : '아이템 없음') + '</div></div>'
+        + '<div class="rright"><div class="ranswer">' + esc(p.result || '미도착') + '</div>'
+        + '<div class="rcoins">🪙 ' + p.coins + ' · 🎁 ' + p.items.length + '</div></div>'
+        + '</div>';
+    });
+    $('result-list').innerHTML = html;
+    showScreen('result');
+  }
+
+  /* ---------------- 화면 전환 / 시작 ---------------- */
+  function showScreen(name){
+    ['setup', 'game', 'result'].forEach(function(s){
+      $('screen-' + s).classList.toggle('on', s === name);
+    });
+  }
+
+  function updateTopbar(){
+    var p = S.players[S.selected];
+    if(!p) return;
+    $('tb-name').textContent = p.name;
+    $('tb-coins').textContent = p.coins;
+    var btn = $('btn-walk');
+    btn.textContent = '▶ ' + p.name + ' 출발!';
+    btn.disabled = !!walk && !walk.done;
+  }
+
+  function newGame(){
+    /* 이름/결과 확정 */
+    var names = [], results = [];
+    for(var i = 0; i < S.count; i++){
+      var nm = (S.names[i] || '').trim();
+      var rs = (S.results[i] || '').trim();
+      names.push(nm || ('참가자 ' + (i + 1)));
+      results.push(rs || ('결과 ' + (i + 1)));
+    }
+    S.names = names;
+    S.results = results;
+
+    S.players = names.map(function(nm, i){
+      return {
+        name:nm,
+        color:COLORS[i],
+        startCol:i,
+        endCol:null,
+        coins:0,
+        items:[],
+        finished:false,
+        result:null,
+        pos:null,
+        trail:[],
+        shops:SHOP_LEVELS.map(function(){ return {visited:false, rolled:false, value:null, gain:0, bought:[]}; })
+      };
+    });
+    S.selected = 0;
+    S.rungs = makeRungs(S.count, LEVELS);
+    abortWalk();
+    S.locked = false;
+
+    showScreen('game');
+    requestAnimationFrame(function(){
+      layout();
+      S.players.forEach(function(p, i){
+        p.pos = {x:S.geom.x(i), y:S.geom.tokenY};
+      });
+      draw();
+      updateTopbar();
+      $('btn-shuffle').disabled = false;
+    });
+  }
+
+  function resetRound(){
+    S.players.forEach(function(p, i){
+      p.coins = 0;
+      p.items = [];
+      p.finished = false;
+      p.result = null;
+      p.endCol = null;
+      p.trail = [];
+      p.shops = SHOP_LEVELS.map(function(){ return {visited:false, rolled:false, value:null, gain:0, bought:[]}; });
+      p.pos = {x:S.geom.x(i), y:S.geom.tokenY};
+    });
+    S.selected = 0;
+    S.rungs = makeRungs(S.count, LEVELS);
+    abortWalk();
+    showScreen('game');
+    requestAnimationFrame(function(){
+      layout();
+      S.players.forEach(function(p, i){
+        p.pos = {x:S.geom.x(i), y:S.geom.tokenY};
+      });
+      draw();
+      updateTopbar();
+      $('btn-shuffle').disabled = false;
+    });
+  }
+
+  /* ---------------- 이벤트 ---------------- */
+  $('btn-start').addEventListener('click', newGame);
+  $('btn-again').addEventListener('click', resetRound);
+  $('btn-new').addEventListener('click', function(){
+    abortWalk();
+    showScreen('setup');
+    setCount(S.count);
+  });
+
+  $('btn-walk').addEventListener('click', function(){
+    if(walk && !walk.done) return;
+    var p = S.players[S.selected];
+    if(!p || p.finished){
+      var n = S.players.length;
+      var found = -1;
+      for(var k = 0; k < n; k++){
+        var i = (S.selected + k) % n;
+        if(!S.players[i].finished){ found = i; break; }
+      }
+      if(found < 0) return;
+      S.selected = found;
+      updateTopbar();
+    }
+    startWalk(S.selected);
+  });
+
+  $('btn-shuffle').addEventListener('click', function(){
+    if(walk && !walk.done) return;
+    var anyStarted = S.players.some(function(p){ return p.finished || p.shops.some(function(s){ return s.visited; }); });
+    if(anyStarted) return;
+    S.rungs = makeRungs(S.count, LEVELS);
+    draw();
+  });
+
+  $('btn-back').addEventListener('click', function(){
+    if(window.confirm('사다리를 나가고 설정 화면으로 돌아갈까요?\n진행 중인 판은 사라집니다.')){
+      abortWalk();
+      closeModal();
+      showScreen('setup');
+      setCount(S.count);
+    }
+  });
+
+  $('ladder').addEventListener('click', function(e){
+    if(walk && !walk.done) return;
+    var t = e.target;
+    while(t && t !== this){
+      if(t.classList && t.classList.contains('tok')){
+        var i = +t.dataset.i;
+        if(S.players[i] && !S.players[i].finished){
+          S.selected = i;
+          updateTopbar();
+          renderTokens();
+        }
+        return;
+      }
+      t = t.parentNode;
+    }
+  });
+
+  window.addEventListener('resize', function(){
+    if(!$('screen-game').classList.contains('on')) return;
+    if(walk && !walk.done) return; /* 진행 중에는 다시 그리지 않음 */
+    layout();
+    S.players.forEach(function(p, i){
+      if(p.finished && p.endCol !== null) p.pos = {x:S.geom.x(p.endCol), y:S.geom.yBot};
+      else if(!p.trail.length) p.pos = {x:S.geom.x(i), y:S.geom.tokenY};
+    });
+    draw();
+  });
+
+  window.addEventListener('orientationchange', function(){
+    setTimeout(function(){
+      window.dispatchEvent(new Event('resize'));
+    }, 250);
+  });
+
+  /* ---------------- 초기화 ---------------- */
+  applyPreset(1);
+  setCount(4);
+})();
+</script>
+</body>
+</html>
