@@ -1284,12 +1284,6 @@
     g.lineTo(mx + 7, barY - 20);
     g.closePath();
     g.fill();
-
-    // 안내
-    g.font = '900 13px "Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif';
-    g.textAlign = 'center';
-    g.fillStyle = '#5f7f92';
-    g.fillText('녹색 칸에서 톡!', w / 2, 26);
   }
 
   function drawSwimmer(g, s, t) {
@@ -1427,6 +1421,7 @@
 
   function buildDecoBar() {
     decoItems.innerHTML = '';
+    if (deco.sel && (S.owned[deco.sel] || 0) <= 0) deco.sel = firstOwned();
     var any = false;
     for (var i = 0; i < W.shop.length; i++) {
       var it = W.shop[i];
@@ -1453,6 +1448,7 @@
       })(it, cnt);
     }
     if (!any) {
+      deco.sel = null;
       var empty = document.createElement('div');
       empty.className = 'deco-empty';
       empty.textContent = '아직 가구가 없어요. 상점에서 사 보세요!';
