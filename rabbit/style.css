@@ -339,7 +339,7 @@ h1{
   100%{box-shadow:0 0 0 0 rgba(245,135,31,0)}
 }
 .myhand{position:relative;height:104px;padding:0 2px}
-.hand-card{
+.card.hand-card{
   position:absolute;bottom:5px;
   width:58px;height:84px;font-size:25px;border-radius:10px;
   transition:left .26s cubic-bezier(.2,.8,.3,1), bottom .26s cubic-bezier(.2,.8,.3,1), transform .26s cubic-bezier(.2,.8,.3,1);
