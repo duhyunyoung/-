@@ -11,7 +11,12 @@
 </style>
 </head>
 <body>
-  <div class="col"><span class="lbl">390×800 (iPhone 14)</span><iframe id="f1" src="../index.html" width="390" height="800"></iframe></div>
-  <div class="col"><span class="lbl">360×640 (small)</span><iframe id="f2" src="../index.html" width="360" height="640"></iframe></div>
+  <div class="col"><span class="lbl">390×800 (iPhone 14)</span><iframe id="f1" width="390" height="800"></iframe></div>
+  <div class="col"><span class="lbl">360×640 (small)</span><iframe id="f2" width="360" height="640"></iframe></div>
+<script>
+  var v = Date.now();
+  document.getElementById('f1').src = '../index.html?t=' + v;
+  document.getElementById('f2').src = '../index.html?t=' + v;
+</script>
 </body>
 </html>
