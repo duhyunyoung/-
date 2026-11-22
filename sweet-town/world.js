@@ -330,7 +330,14 @@ window.World = (function () {
     g.save();
     A.ell(g, cx, cy, rx, ry);
     g.clip();
-    g.strokeStyle = 'rgba(255,255,255,.5)';
+    // 아래쪽에 젤리 빛
+    var jg = g.createRadialGradient(cx - rx * 0.1, cy + ry * 0.5, 12, cx, cy + ry * 0.35, rx * 0.9);
+    jg.addColorStop(0, 'rgba(198,166,255,.5)');
+    jg.addColorStop(0.6, 'rgba(198,166,255,.18)');
+    jg.addColorStop(1, 'rgba(198,166,255,0)');
+    g.fillStyle = jg;
+    g.fillRect(cx - rx, cy - ry, rx * 2, ry * 2);
+    g.strokeStyle = 'rgba(255,255,255,.34)';
     g.lineWidth = 3;
     for (var w = 0; w < 5; w++) {
       var wy = cy - ry * 0.6 + w * (ry * 0.3) + 6;
@@ -344,16 +351,24 @@ window.World = (function () {
     }
     // 떠 있는 젤리 조각
     var jellyDots = [
-      { x: -0.45, y: 0.25, c: '#ffb1cf', r: 9 },
-      { x: 0.35, y: -0.3, c: '#ffe08a', r: 7 },
-      { x: 0.1, y: 0.45, c: '#c9b2ff', r: 8 },
-      { x: -0.2, y: -0.45, c: '#a7e8c4', r: 7 }
+      { x: -0.45, y: 0.25, c: '#ffb1cf', r: 11 },
+      { x: 0.36, y: -0.32, c: '#ffe08a', r: 9 },
+      { x: 0.08, y: 0.46, c: '#c9b2ff', r: 10 },
+      { x: -0.18, y: -0.46, c: '#a7e8c4', r: 8 },
+      { x: 0.62, y: 0.12, c: '#ffc9dd', r: 7 }
     ];
     for (var j = 0; j < jellyDots.length; j++) {
       var jd = jellyDots[j];
+      g.fillStyle = 'rgba(120,160,200,.18)';
+      A.rr(g, cx + jd.x * rx - jd.r + 2, cy + jd.y * ry - jd.r * 0.7 + 3, jd.r * 2, jd.r * 1.4, jd.r * 0.5);
+      g.fill();
       g.fillStyle = jd.c;
-      g.globalAlpha = 0.55;
+      g.globalAlpha = 0.8;
       A.rr(g, cx + jd.x * rx - jd.r, cy + jd.y * ry - jd.r * 0.7, jd.r * 2, jd.r * 1.4, jd.r * 0.5);
+      g.fill();
+      g.globalAlpha = 0.75;
+      g.fillStyle = '#ffffff';
+      A.rr(g, cx + jd.x * rx - jd.r * 0.6, cy + jd.y * ry - jd.r * 0.55, jd.r * 0.9, jd.r * 0.35, jd.r * 0.2);
       g.fill();
       g.globalAlpha = 1;
     }

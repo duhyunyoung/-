@@ -1399,7 +1399,7 @@
       deco.sel = firstOwned();
       buildDecoBar();
       walk.target = null; walk.path = [];
-      toast('노란 점선 안을 톡 누르면 가구가 놓여요');
+      toast('점선 칸을 톡 누르면 가구가 놓여요');
       Sound.blip();
     } else {
       app.classList.remove('deco');
