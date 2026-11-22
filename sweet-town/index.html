@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#ffe3ef">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="엘리의 간식 마을">
+<meta name="description" content="사탕 나무와 젤리 연못이 있는 달콤한 간식 마을에서 동물 친구들을 도와주는 2D 놀이">
+<title>엘리의 간식 마을</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <canvas id="game" aria-label="엘리의 간식 마을"></canvas>
+
+  <div class="hud" id="hud">
+    <div class="topbar">
+      <div class="coin-pill" id="coinPill">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.75 5.9 6.45.85-4.75 4.45 1.2 6.4L12 17.1 6.35 20.2l1.2-6.4L2.8 9.35l6.45-.85z" fill="#ffd045" stroke="#e29a18" stroke-width="1.3" stroke-linejoin="round"/></svg>
+        <span id="coinCount">10</span>
+      </div>
+      <div class="top-btns">
+        <button class="icon-btn" id="btnHelp" aria-label="도움말">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.6 9.2a2.6 2.6 0 015.1.7c0 1.7-2.5 2-2.5 3.9" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/><circle cx="12" cy="17.6" r="1.35" fill="currentColor"/><circle cx="12" cy="12" r="9.2" fill="none" stroke="currentColor" stroke-width="1.9" opacity=".55"/></svg>
+        </button>
+        <button class="icon-btn" id="btnSound" aria-label="소리 켜기/끄기"></button>
+      </div>
+    </div>
+
+    <div class="mission" id="mission">
+      <div class="mission-head">
+        <span class="m-star">★</span>
+        <span class="m-who" id="missionWho">간식 마을</span>
+        <span class="m-prog" id="missionProg"></span>
+      </div>
+      <div class="mission-text" id="missionText">동물 친구에게 말을 걸어 보세요!</div>
+    </div>
+
+    <div class="inv" id="invBar"></div>
+    <div class="spacer"></div>
+
+    <div class="bottom">
+      <div class="stick-zone" id="stickZone" aria-hidden="true">
+        <div class="stick-base">
+          <div class="stick-knob" id="stickKnob"></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="round-btn small" id="btnShop" aria-label="간식 상점">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 8h11.6l-1 11.4a1.6 1.6 0 01-1.6 1.4H8.8a1.6 1.6 0 01-1.6-1.4L6.2 8z" fill="#fff" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M9 8.4a3 3 0 016 0" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
+          <span class="lbl">상점</span>
+        </button>
+        <button class="round-btn small" id="btnDeco" aria-label="마을 꾸미기">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.6l4.2-.9 9.1-9.1-3.3-3.3L4.9 15.4 4 19.6z" fill="#fff" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M15.2 4.9l1.6-1.6 3.3 3.3-1.6 1.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12.4 20.5h7.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span class="lbl">꾸미기</span>
+        </button>
+        <button class="round-btn big" id="btnAct" aria-label="말 걸기">
+          <span class="act-ico" id="actIco"></span>
+          <span class="act-lbl" id="actLbl">말 걸기</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="scrim" id="scrim"></div>
+
+  <div class="sheet" id="sheet" aria-hidden="true">
+    <div class="sheet-head">
+      <div class="sheet-title" id="sheetTitle">간식 상점</div>
+      <button class="icon-btn" id="sheetClose" aria-label="닫기">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="sheet-body" id="sheetBody"></div>
+  </div>
+
+  <div class="deco-bar" id="decoBar">
+    <div class="deco-head">
+      <span id="decoHint">놓을 가구를 골라 주세요</span>
+      <div class="deco-tools">
+        <button class="ghost" id="btnDecoShop">상점</button>
+        <button id="btnDecoDone">꾸미기 끝</button>
+      </div>
+    </div>
+    <div class="deco-items" id="decoItems"></div>
+  </div>
+
+  <div class="dialogue" id="dialogue">
+    <div class="dlg-head">
+      <div class="dlg-ava" id="dlgAva"></div>
+      <div class="dlg-name" id="dlgName">솜솜</div>
+    </div>
+    <div class="dlg-text" id="dlgText"></div>
+    <div class="dlg-btns" id="dlgBtns"></div>
+  </div>
+
+  <div class="fishing" id="fishing">
+    <div class="fish-card">
+      <div class="fish-title">젤리 연못 낚시</div>
+      <canvas id="fishCanvas" width="360" height="196"></canvas>
+      <div class="fish-msg" id="fishMsg">초록색 칸에 올 때 톡 눌러 봐!</div>
+      <button class="fish-tap" id="fishTap">톡!</button>
+      <button class="fish-close" id="fishClose">그만 낚시하기</button>
+    </div>
+  </div>
+
+  <div class="intro" id="intro">
+    <div class="intro-inner">
+      <h1>엘리의 간식 마을</h1>
+      <p class="intro-sub">달콤한 과자집에서 동물 친구들을 도와주세요!</p>
+      <canvas id="introArt" width="660" height="420"></canvas>
+      <button class="intro-start" id="introStart">놀이 시작!</button>
+      <p class="intro-tip">화면을 톡 누르면 걸어가요. 동물 친구에게 말을 걸어 봐요!</p>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script src="art.js"></script>
+<script src="world.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
