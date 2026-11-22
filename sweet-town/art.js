@@ -1434,53 +1434,60 @@ window.Art = (function () {
   function drawIntroScene(g, w, h, t) {
     var sky = g.createLinearGradient(0, 0, 0, h);
     sky.addColorStop(0, '#fff2f9');
-    sky.addColorStop(0.55, '#ffe0ef');
-    sky.addColorStop(1, '#e7f6e0');
+    sky.addColorStop(0.5, '#ffe4f0');
+    sky.addColorStop(0.75, '#f2f7e2');
+    sky.addColorStop(1, '#e3f4d8');
     g.fillStyle = sky;
     g.fillRect(0, 0, w, h);
     // 해
-    var sg = g.createRadialGradient(w * 0.82, h * 0.18, 4, w * 0.82, h * 0.18, 60);
+    var sg = g.createRadialGradient(w * 0.82, h * 0.16, 4, w * 0.82, h * 0.16, 70);
     sg.addColorStop(0, 'rgba(255,240,170,.95)');
     sg.addColorStop(1, 'rgba(255,240,170,0)');
-    circ(g, w * 0.82, h * 0.18, 60);
+    circ(g, w * 0.82, h * 0.16, 70);
     g.fillStyle = sg;
     g.fill();
-    drawCloud(g, w * 0.2, h * 0.15, 20, 0.85);
-    drawCloud(g, w * 0.55, h * 0.09, 15, 0.7);
-    drawCloud(g, w * 0.92, h * 0.34, 13, 0.6);
+    drawCloud(g, w * 0.18, h * 0.13, 24, 0.9);
+    drawCloud(g, w * 0.52, h * 0.07, 17, 0.7);
+    drawCloud(g, w * 0.93, h * 0.32, 15, 0.6);
     // 땅
     g.fillStyle = '#c9e9b8';
     g.beginPath();
     g.moveTo(0, h * 0.72);
-    g.quadraticCurveTo(w * 0.5, h * 0.64, w, h * 0.72);
+    g.quadraticCurveTo(w * 0.5, h * 0.67, w, h * 0.72);
     g.lineTo(w, h);
     g.lineTo(0, h);
     g.closePath();
     g.fill();
     g.fillStyle = '#bfe2ad';
-    for (var i = 0; i < 26; i++) {
+    for (var i = 0; i < 30; i++) {
       var fx = (i * 53 % w) + 6;
-      var fy = h * 0.76 + ((i * 37) % (h * 0.2));
-      circ(g, fx, fy, 2);
-      g.fillStyle = i % 3 ? '#a8d495' : '#ffd0e2';
+      var fy = h * 0.76 + ((i * 37) % (h * 0.22));
+      g.fillStyle = i % 3 ? '#b3d9a0' : '#ffd0e2';
+      circ(g, fx, fy, 2.2);
       g.fill();
-      g.fillStyle = '#bfe2ad';
     }
-    // 나무
-    drawLollipopTree(g, w * 0.12, h * 0.9, 0, t);
-    drawLollipopTree(g, w * 0.9, h * 0.92, 1, t);
-    drawCottonBush(g, w * 0.26, h * 0.95, 0, t);
-    // 과자집
-    drawHouse(g, w * 0.5, h * 0.92, 0.52, t);
-    // 친구들
-    drawAnimal(g, 'rabbit', w * 0.2, h * 0.99, 1.05, t, 'right');
-    drawAnimal(g, 'bear', w * 0.8, h * 0.99, 1.05, t, 'left');
-    drawGirl(g, w * 0.62, h * 0.995, 1.05, t, false, 'right');
+
+    function at(x, y, s, fn) {
+      g.save();
+      g.translate(x, y);
+      g.scale(s, s);
+      fn();
+      g.restore();
+    }
+
+    at(w * 0.09, h * 0.95, 1.6, function () { drawLollipopTree(g, 0, 0, 0, t); });
+    at(w * 0.93, h * 0.96, 1.6, function () { drawLollipopTree(g, 0, 0, 1, t); });
+    at(w * 0.24, h * 1.0, 1.2, function () { drawCottonBush(g, 0, 0, 0, t); });
+    at(w * 0.5, h * 0.97, 0.64, function () { drawHouse(g, 0, 0, 1, t); });
+    at(w * 0.27, h * 0.99, 1.35, function () { drawAnimal(g, 'rabbit', 0, 0, 1, t, 'right'); });
+    at(w * 0.74, h * 0.99, 1.35, function () { drawAnimal(g, 'bear', 0, 0, 1, t, 'left'); });
+    at(w * 0.64, h * 1.0, 1.45, function () { drawGirl(g, 0, 0, 1, t, false, 'right'); });
+
     // 반짝이
-    for (var s = 0; s < 5; s++) {
-      var sx = w * (0.2 + s * 0.15);
-      var sy = h * (0.2 + ((s * 13) % 30) / 100);
-      drawSparkle(g, sx, sy, 3 + (s % 3), 0.55 + Math.sin(t * 2 + s) * 0.3);
+    for (var s = 0; s < 6; s++) {
+      var sx = w * (0.14 + s * 0.14);
+      var sy = h * (0.18 + ((s * 17) % 32) / 100);
+      drawSparkle(g, sx, sy, 3.4 + (s % 3), 0.5 + Math.sin(t * 2 + s) * 0.3);
     }
   }
 
