@@ -9,6 +9,9 @@
 </style>
 </head>
 <body>
-<iframe src="./index.html" title="엘리의 간식 마을 미리보기"></iframe>
+<iframe id="f" title="엘리의 간식 마을 미리보기"></iframe>
+<script>
+  document.getElementById('f').src = './index.html?r=' + Date.now();
+</script>
 </body>
 </html>
