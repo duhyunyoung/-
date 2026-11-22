@@ -4,7 +4,7 @@ window.World = (function () {
   var A = window.Art;
 
   var TILE = 40;
-  var MAP_W = 30, MAP_H = 26;
+  var MAP_W = 30, MAP_H = 32;
   var WORLD_W = MAP_W * TILE, WORLD_H = MAP_H * TILE;
   var GRASS = 0, PATH = 1, PLAZA = 2, POND = 3;
 
@@ -20,7 +20,7 @@ window.World = (function () {
   // 초콜릿 길 (가로)
   for (y = 14; y <= 15; y++) for (x = 2; x <= 27; x++) terrain[y][x] = PATH;
   // 초콜릿 길 (세로)
-  for (y = 16; y <= 25; y++) for (x = 14; x <= 15; x++) terrain[y][x] = PATH;
+  for (y = 16; y <= 30; y++) for (x = 14; x <= 15; x++) terrain[y][x] = PATH;
   // 연못으로 가는 길
   for (y = 16; y <= 17; y++) for (x = 16; x <= 20; x++) terrain[y][x] = PATH;
 
@@ -64,6 +64,13 @@ window.World = (function () {
     { kind: 'marshmallow', item: 'marshmallow', v: 1, x: 28, y: 12 },
     { kind: 'marshmallow', item: 'marshmallow', v: 2, x: 10, y: 24 },
     { kind: 'marshmallow', item: 'marshmallow', v: 0, x: 20, y: 23 },
+    // 맨 아래 동산
+    { kind: 'lollipop', item: 'candy', v: 3, x: 4, y: 27 },
+    { kind: 'lollipop', item: 'candy', v: 0, x: 26, y: 28 },
+    { kind: 'cocoa', item: 'choco', v: 1, x: 21, y: 29 },
+    { kind: 'cotton', item: 'cotton', v: 2, x: 9, y: 29 },
+    { kind: 'marshmallow', item: 'marshmallow', v: 1, x: 24, y: 25 },
+    { kind: 'cotton', item: 'cotton', v: 0, x: 6, y: 30 },
     // 마시멜로 벤치
     { kind: 'bench', x: 10, y: 13 },
     { kind: 'bench', x: 19, y: 13 }
