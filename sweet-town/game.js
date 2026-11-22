@@ -251,7 +251,7 @@
 
   /* ---------------- 놀이 상태 ---------------- */
 
-  var walk = { target: null, anim: 0, dust: 0 };
+  var walk = { target: null, path: [], anim: 0, dust: 0, blocked: 0 };
   var camHold = false;
   var joy = { active: false, id: null, dx: 0, dy: 0 };
   var deco = { on: false, sel: null, hover: null };
@@ -744,21 +744,116 @@
 
   /* ---------------- 움직임 ---------------- */
 
+  /* ---------------- 길 찾기 (탭으로 걸어가기) ---------------- */
+
+  var grid = null;
+
+  function buildGrid() {
+    grid = [];
+    for (var y = 0; y < W.MAP_H; y++) {
+      var row = [];
+      for (var x = 0; x < W.MAP_W; x++) row.push(W.canStand(x + 0.5, y + 0.5) ? 1 : 0);
+      grid.push(row);
+    }
+  }
+
+  function walkableTile(tx, ty) {
+    return ty >= 0 && ty < W.MAP_H && tx >= 0 && tx < W.MAP_W && grid[ty][tx] === 1;
+  }
+
+  function nearestWalkableTile(tx, ty) {
+    if (walkableTile(tx, ty)) return { x: tx, y: ty };
+    for (var r = 1; r <= 6; r++) {
+      for (var dy = -r; dy <= r; dy++) {
+        for (var dx = -r; dx <= r; dx++) {
+          if (Math.abs(dx) !== r && Math.abs(dy) !== r) continue;
+          if (walkableTile(tx + dx, ty + dy)) return { x: tx + dx, y: ty + dy };
+        }
+      }
+    }
+    return null;
+  }
+
+  function lineClear(ax, ay, bx, by) {
+    var dx = bx - ax, dy = by - ay;
+    var len = Math.sqrt(dx * dx + dy * dy);
+    var steps = Math.max(1, Math.ceil(len / 0.28));
+    for (var i = 1; i <= steps; i++) {
+      var t = i / steps;
+      if (!W.canStand(ax + dx * t, ay + dy * t)) return false;
+    }
+    return true;
+  }
+
+  function findPath(sx, sy, tx, ty) {
+    var s = nearestWalkableTile(Math.floor(sx), Math.floor(sy));
+    var t = nearestWalkableTile(Math.floor(tx), Math.floor(ty));
+    if (!s || !t) return null;
+    var nodes = {};
+    var key = function (x, y) { return x + ',' + y; };
+    var start = { x: s.x, y: s.y, g: 0, f: 0, parent: null };
+    var open = [start];
+    nodes[key(s.x, s.y)] = start;
+    var goalKey = key(t.x, t.y);
+    var guard = 0;
+    while (open.length && guard++ < 4000) {
+      var best = 0;
+      for (var i = 1; i < open.length; i++) if (open[i].f < open[best].f) best = i;
+      var cur = open.splice(best, 1)[0];
+      if (key(cur.x, cur.y) === goalKey) {
+        var path = [];
+        var n = cur;
+        while (n) { path.unshift({ x: n.x + 0.5, y: n.y + 0.5 }); n = n.parent; }
+        path.shift();
+        return path;
+      }
+      var dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+      for (var d = 0; d < 4; d++) {
+        var nx = cur.x + dirs[d][0], ny = cur.y + dirs[d][1];
+        if (!walkableTile(nx, ny)) continue;
+        var k = key(nx, ny);
+        var g = cur.g + 1;
+        var old = nodes[k];
+        if (old && old.g <= g) continue;
+        var node = { x: nx, y: ny, g: g, f: g + Math.abs(nx - t.x) + Math.abs(ny - t.y), parent: cur };
+        nodes[k] = node;
+        if (old) { var idx = open.indexOf(old); if (idx >= 0) open.splice(idx, 1); }
+        open.push(node);
+      }
+    }
+    return null;
+  }
+
+  function smoothPath(path, sx, sy) {
+    if (!path || path.length < 2) return path;
+    var out = [];
+    var cx = sx, cy = sy, i = 0;
+    while (i < path.length) {
+      var far = i;
+      for (var j = path.length - 1; j > i; j--) {
+        if (lineClear(cx, cy, path[j].x, path[j].y)) { far = j; break; }
+      }
+      out.push(path[far]);
+      cx = path[far].x; cy = path[far].y;
+      if (far === i) i++; else i = far + 1;
+    }
+    return out;
+  }
+
   function setWalkTarget(tx, ty) {
     tx = clamp(tx, 0.8, W.MAP_W - 0.8);
     ty = clamp(ty, 0.8, W.MAP_H - 0.8);
-    if (!W.canStand(tx, ty)) {
-      var found = null;
-      for (var r = 0.4; r <= 4.4 && !found; r += 0.4) {
-        for (var a = 0; a < 16; a++) {
-          var nx = tx + Math.cos((a / 16) * TAU) * r;
-          var ny = ty + Math.sin((a / 16) * TAU) * r;
-          if (W.canStand(nx, ny)) { found = { x: nx, y: ny }; break; }
-        }
-      }
-      if (!found) return;
-      tx = found.x; ty = found.y;
+    var path = findPath(S.px, S.py, tx, ty);
+    if (!path) return;
+    if (!path.length) {
+      // 바로 발밑
+      walk.target = null; walk.path = [];
+      return;
     }
+    var last = path[path.length - 1];
+    if (W.canStand(tx, ty)) path.push({ x: tx, y: ty });
+    else if (last) { /* 타일 중앙에서 멈춤 */ }
+    walk.path = smoothPath(path, S.px, S.py);
     walk.target = { x: tx, y: ty };
   }
 
@@ -769,12 +864,17 @@
     if (!busy && !deco.on) {
       if (joy.active && (Math.abs(joy.dx) + Math.abs(joy.dy)) > 0.2) {
         vx = joy.dx; vy = joy.dy;
-        walk.target = null;
-      } else if (walk.target) {
-        var dx = walk.target.x - S.px, dy = walk.target.y - S.py;
+        walk.target = null; walk.path = [];
+      } else if (walk.path && walk.path.length) {
+        var node = walk.path[0];
+        var dx = node.x - S.px, dy = node.y - S.py;
         var d = Math.sqrt(dx * dx + dy * dy);
-        if (d < 0.12) walk.target = null;
-        else { vx = dx / d; vy = dy / d; }
+        if (d < 0.2) {
+          walk.path.shift();
+          if (!walk.path.length) { walk.target = null; }
+        } else {
+          vx = dx / d; vy = dy / d;
+        }
       }
     }
 
@@ -783,8 +883,20 @@
       vx /= l; vy /= l;
       var sp = 3.2;
       var nx = S.px + vx * sp * dt, ny = S.py + vy * sp * dt;
-      if (W.canStand(nx, S.py)) S.px = nx;
-      if (W.canStand(S.px, ny)) S.py = ny;
+      var moved = false;
+      if (W.canStand(nx, S.py)) { S.px = nx; moved = true; }
+      if (W.canStand(S.px, ny)) { S.py = ny; moved = true; }
+      if (!moved) {
+        walk.blocked += dt;
+        if (walk.blocked > 0.3 && walk.path && walk.path.length > 1) {
+          walk.path.shift();
+          walk.blocked = 0;
+        } else if (walk.blocked > 0.9) {
+          walk.path = []; walk.target = null; walk.blocked = 0;
+        }
+      } else {
+        walk.blocked = 0;
+      }
       walk.anim += dt;
       if (Math.abs(vx) > Math.abs(vy)) S.dir = vx > 0 ? 'right' : 'left';
       else S.dir = vy > 0 ? 'down' : 'up';
@@ -872,6 +984,7 @@
     lastAct = label;
     actLbl.textContent = label;
     actIco.innerHTML = icon;
+    btnAct.setAttribute('aria-label', label);
   }
 
   /* ---------------- 줍기 ---------------- */
@@ -928,7 +1041,7 @@
     }
     dlg.classList.add('show');
     dialogueOpen = true;
-    walk.target = null;
+    walk.target = null; walk.path = [];
     Sound.talk();
   }
 
@@ -1036,7 +1149,7 @@
     fish.msg = '초록색 칸에 올 때 톡 눌러 봐!';
     fishMsg.textContent = fish.msg;
     fishingEl.classList.add('show');
-    walk.target = null;
+    walk.target = null; walk.path = [];
     Sound.blip();
   }
 
@@ -1210,7 +1323,7 @@
     scrim.classList.add('show');
     sheet.classList.add('open');
     sheet.setAttribute('aria-hidden', 'false');
-    walk.target = null;
+    walk.target = null; walk.path = [];
   }
 
   function closeSheet() {
@@ -1291,7 +1404,7 @@
       decoBar.classList.add('show');
       deco.sel = firstOwned();
       buildDecoBar();
-      walk.target = null;
+      walk.target = null; walk.path = [];
       toast('노란 점선 안을 톡 누르면 가구가 놓여요');
       Sound.blip();
     } else {
@@ -1613,6 +1726,7 @@
   function init() {
     resize();
     terrainCanvas = W.buildTerrainCanvas();
+    buildGrid();
     cam.x = S.px * TILE;
     cam.y = S.py * TILE;
     if (!S.seenIntro) {
