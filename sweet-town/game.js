@@ -223,7 +223,7 @@
     cv.style.width = w + 'px';
     cv.style.height = h + 'px';
     view.w = w; view.h = h; view.dpr = dpr;
-    view.zoom = clamp(Math.min(w / (11 * TILE), h / (9 * TILE)), 0.5, 2.2);
+    view.zoom = clamp(Math.min(w / (9.5 * TILE), h / (8 * TILE)), 0.6, 1.6);
     cameraClamp();
   }
 

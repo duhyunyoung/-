@@ -209,11 +209,11 @@ window.World = (function () {
 
   function drawGrassTile(g, px, py, tx, ty) {
     var n = hash(tx, ty, 3);
-    var palette = ['#cbeab9', '#c6e8b4', '#d2eebe'];
+    var palette = ['#caeab9', '#c8e8b7', '#cdebbd'];
     g.fillStyle = palette[Math.floor(n * 3) % 3];
     g.fillRect(px, py, TILE, TILE);
     // 풀결
-    g.fillStyle = 'rgba(150,205,130,.45)';
+    g.fillStyle = 'rgba(150,205,130,.28)';
     for (var k = 0; k < 3; k++) {
       var hx = hash(tx, ty, k + 1), hy = hash(tx, ty, k + 9);
       A.ell(g, px + 5 + hx * 30, py + 5 + hy * 30, 2.6, 1.6);
@@ -261,17 +261,17 @@ window.World = (function () {
 
   function drawPlazaTile(g, px, py, tx, ty) {
     var n = hash(tx, ty, 7);
-    g.fillStyle = '#f7b9d0';
+    g.fillStyle = '#f8cfe0';
     g.fillRect(px, py, TILE, TILE);
-    g.fillStyle = n > 0.5 ? '#ffd8e7' : '#ffd1e2';
-    A.rr(g, px + 1, py + 1, TILE - 2, TILE - 2, 9);
+    g.fillStyle = n > 0.5 ? '#ffeaf3' : '#ffe5ef';
+    A.rr(g, px + 1, py + 1, TILE - 2, TILE - 2, 10);
     g.fill();
-    g.fillStyle = 'rgba(255,255,255,.6)';
-    A.rr(g, px + 4, py + 4, TILE - 8, TILE * 0.3, 6);
+    g.fillStyle = 'rgba(255,255,255,.4)';
+    A.rr(g, px + 4, py + 4, TILE - 8, TILE * 0.26, 7);
     g.fill();
-    if (n > 0.55) {
-      g.fillStyle = 'rgba(255,255,255,.85)';
-      A.circ(g, px + 12 + hash(tx, ty, 41) * 16, py + 22 + hash(tx, ty, 42) * 10, 1.6);
+    if (n > 0.62) {
+      g.fillStyle = 'rgba(255,214,232,.9)';
+      A.circ(g, px + 12 + hash(tx, ty, 41) * 16, py + 22 + hash(tx, ty, 42) * 10, 1.5);
       g.fill();
     }
   }
