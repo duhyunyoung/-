@@ -112,7 +112,7 @@
   var Sound = {
     ctx: null, master: null, muted: false, musicTimer: null, musicStep: 0,
     unlock: function () {
-      if (this.muted) { this.icon(); return; }
+      if (this.muted) return;
       try {
         if (!this.ctx) {
           var AC = window.AudioContext || window.webkitAudioContext;
