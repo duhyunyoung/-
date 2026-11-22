@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#e9f5dd">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="토끼잡기">
+<meta name="description" content="코리아보드게임즈 〈토끼잡기〉 원본 규칙 그대로 즐기는 모바일 웹 카드게임">
+<title>🐰 토끼잡기 — 웹 카드게임</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ============ 시작 화면 ============ -->
+  <section id="scr-start" class="screen active scroll">
+    <div class="start">
+      <div class="hero">
+        <div class="hero-cards" aria-hidden="true">
+          <div class="mini" style="--c1:#F5871F;--c2:#FFE4C2"><span>🥕</span></div>
+          <div class="mini" style="--c1:#6C4AB6;--c2:#E4D9FA"><span>🍆</span></div>
+          <div class="mini rabbit"><span>🐰</span></div>
+          <div class="mini" style="--c1:#3E8E41;--c2:#D9EFC9"><span>🥒</span></div>
+        </div>
+        <h1>토끼잡기</h1>
+        <p class="tagline">채소를 훔친 <b>토끼 도둑</b>을 잡아라!</p>
+        <div class="meta-chips">
+          <span>👥 2~6명</span><span>⏱ 약 10분</span><span>📜 원본 규칙</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="field">
+          <div class="field-head"><span class="flabel">모드</span></div>
+          <div class="seg" id="mode-seg">
+            <button type="button" class="seg-btn active" data-mode="ai"><i>🤖</i>AI 대전</button>
+            <button type="button" class="seg-btn" data-mode="pass"><i>👥</i>한 기기에서</button>
+          </div>
+          <p class="fdesc" id="mode-desc">나 1명 + AI 1~5명. AI가 차례를 자동으로 진행해요.</p>
+        </div>
+
+        <div class="field">
+          <div class="field-head"><span class="flabel">인원</span><span class="fvalue" id="count-value">4명</span></div>
+          <div class="seg seg-count" id="count-seg">
+            <button type="button" data-count="2">2</button>
+            <button type="button" data-count="3">3</button>
+            <button type="button" data-count="4" class="active">4</button>
+            <button type="button" data-count="5">5</button>
+            <button type="button" data-count="6">6</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-head"><span class="flabel">플레이어</span><span class="fvalue">이름을 눌러 바꿀 수 있어요</span></div>
+          <div class="names" id="names-list"></div>
+        </div>
+
+        <div class="field switch-field">
+          <div class="switch-text">
+            <span class="flabel">무작위 1장 빼기 <em class="badge">공식 변형</em></span>
+            <p class="fdesc">끄면 원본 기본 규칙대로 <b>토끼 카드 1장</b>을 빼고 시작해요.</p>
+          </div>
+          <button type="button" class="switch" id="variant-toggle" role="switch" aria-checked="false" aria-label="무작위 1장 빼기"><i></i></button>
+        </div>
+      </div>
+
+      <button type="button" class="primary big" id="btn-start">게임 시작</button>
+      <button type="button" class="ghost" id="btn-rules-start">? 게임 규칙 보기</button>
+      <p class="foot-note">코리아보드게임즈 〈토끼잡기〉 원본 규칙을 그대로 구현한 비공식 웹 게임입니다.</p>
+    </div>
+  </section>
+
+  <!-- ============ 게임 화면 ============ -->
+  <section id="scr-game" class="screen">
+    <header class="topbar">
+      <div class="brand"><span>🐰</span>토끼잡기</div>
+      <div class="topbtns">
+        <button type="button" class="icon-btn" id="btn-sound" aria-label="소리 켜기/끄기">🔊</button>
+        <button type="button" class="rules-btn" id="btn-rules">? 규칙</button>
+      </div>
+    </header>
+
+    <div class="opponents" id="opponents"></div>
+
+    <div class="banner" id="banner" aria-live="polite"></div>
+
+    <div class="stage" id="stage">
+      <div class="table-ring" aria-hidden="true"></div>
+      <div class="stage-cards" id="stage-cards"></div>
+      <div class="discard" id="discard" aria-label="버린 짝">
+        <span class="discard-ico">🗑️</span>
+        <span class="discard-cnt" id="discard-cnt">0</span>
+      </div>
+    </div>
+
+    <div class="me" id="me">
+      <div class="me-head">
+        <span class="me-avatar" id="me-avatar">🙂</span>
+        <span class="me-name" id="me-name">나</span>
+        <span class="turn-dot" id="turn-dot" hidden></span>
+        <span class="me-count" id="me-count">0장</span>
+      </div>
+      <div class="myhand" id="myhand"></div>
+    </div>
+
+    <div class="hint" id="hint"></div>
+  </section>
+
+  <!-- ============ 결과 화면 ============ -->
+  <section id="scr-result" class="screen scroll">
+    <div class="result">
+      <div class="res-emoji" id="res-emoji">🐰</div>
+      <h2 id="res-title">결과</h2>
+      <p class="res-sub" id="res-sub"></p>
+
+      <div class="reveal-box">
+        <div class="reveal-row">
+          <div class="reveal-item">
+            <div class="reveal-slot" id="reveal-excluded"></div>
+            <div class="cap">처음에 빼둔 카드</div>
+          </div>
+          <div class="reveal-arrow" aria-hidden="true">＋</div>
+          <div class="reveal-item">
+            <div class="reveal-slot" id="reveal-left"></div>
+            <div class="cap">마지막에 남은 카드</div>
+          </div>
+        </div>
+        <p class="reveal-note" id="reveal-note"></p>
+      </div>
+
+      <div class="result-list" id="result-list"></div>
+
+      <div class="result-actions">
+        <button type="button" class="primary big" id="btn-again">다시 하기</button>
+        <button type="button" class="ghost" id="btn-home">처음으로</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 가림막(패스 앤 플레이) ============ -->
+  <div class="cover hidden" id="cover">
+    <div class="cover-inner">
+      <div class="cover-label">다음 차례</div>
+      <div class="cover-avatar" id="cover-avatar">🙂</div>
+      <div class="cover-name" id="cover-name">플레이어 1</div>
+      <p class="cover-note">화면을 <b id="cover-name2">플레이어 1</b>에게 넘겨주세요.<br>다른 사람의 패가 보이지 않게 확인한 뒤 시작하세요.</p>
+      <button type="button" class="primary big" id="btn-cover">준비됐어요</button>
+    </div>
+  </div>
+
+  <!-- ============ 규칙 ============ -->
+  <div class="modal hidden" id="modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3>🐰 토끼잡기 규칙</h3>
+        <button type="button" class="icon-btn" id="btn-modal-x" aria-label="닫기">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="rule-lead">2~6명 · 약 10분 · 손에 카드가 남은 마지막 사람이 <b>토끼 도둑</b>!</p>
+
+        <h4>카드 구성</h4>
+        <ul>
+          <li>채소 카드 <b>12종 × 4장 = 48장</b> (당근·토마토·오이·옥수수·가지·브로콜리·양파·호박·버섯·고추·감자·배추)</li>
+          <li>토끼 도둑 카드 <b>4장</b> — 합계 52장</li>
+        </ul>
+
+        <h4>시작하기</h4>
+        <ol>
+          <li>토끼 카드 <b>1장을 빼두고</b> 남은 <b>51장</b>을 모두에게 골고루 나눠 줍니다. <span class="muted">(변형: 무작위 1장 빼기)</span></li>
+          <li>카드를 받자마자 손에 <b>같은 카드 2장</b>이 있으면 즉시 버립니다.</li>
+          <li>이때 카드가 하나도 없어진 사람은 바로 <b>탈출</b>합니다.</li>
+        </ol>
+
+        <h4>차례 진행</h4>
+        <ol>
+          <li>탈출하지 않은 사람이 시계 방향으로 차례를 진행합니다.</li>
+          <li>자기 차례가 되면 <b>바로 다음 사람</b>의 손에서 뒷면 카드 <b>1장</b>을 뽑습니다.</li>
+          <li>뽑은 카드가 내 손의 카드와 같으면 <b>2장을 함께 버립니다.</b> 다르면 그냥 손에 남습니다.</li>
+        </ol>
+
+        <h4>탈출과 승패</h4>
+        <ul>
+          <li>손의 카드가 <b>0장</b>이 되면 즉시 탈출 — <b>승리 확정</b>입니다.</li>
+          <li>마지막까지 카드를 들고 남은 <b>1명이 패배</b>(토끼 도둑), 나머지 전원이 승리합니다.</li>
+          <li>게임이 끝나면 처음에 빼두었던 카드도 함께 공개합니다.</li>
+        </ul>
+
+        <h4>이 웹 게임의 모드</h4>
+        <ul>
+          <li><b>🤖 AI 대전</b> — 나 1명 + AI 1~5명. AI는 0.7~1초 간격으로 차례를 진행합니다.</li>
+          <li><b>👥 한 기기에서</b> — 2~6명이 돌려가며 플레이. 차례가 바뀔 때 가림막으로 남의 패를 가립니다.</li>
+        </ul>
+        <p class="rule-foot">규칙은 원본 〈토끼잡기〉(코리아보드게임즈) 그대로이며, 변형 규칙은 설정에서 켜고 끌 수 있습니다.</p>
+      </div>
+      <button type="button" class="primary" id="btn-modal-ok">알겠어요</button>
+    </div>
+  </div>
+
+</div>
+<script src="game.js"></script>
+</body>
+</html>
