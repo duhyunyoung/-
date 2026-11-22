@@ -11,7 +11,8 @@
 <body>
 <iframe id="f" title="엘리의 간식 마을 미리보기"></iframe>
 <script>
-  document.getElementById('f').src = './index.html?r=' + Date.now();
+  var extra = location.search.indexOf('intro=1') >= 0 ? '&intro=1' : '';
+  document.getElementById('f').src = './index.html?r=' + Date.now() + extra;
 </script>
 </body>
 </html>
