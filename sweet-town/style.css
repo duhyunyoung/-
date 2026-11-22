@@ -924,8 +924,8 @@ button {
   height: auto;
   display: block;
   margin: 4px 0 2px;
-  -webkit-mask-image: radial-gradient(ellipse 74% 72% at 50% 56%, #000 52%, transparent 88%);
-  mask-image: radial-gradient(ellipse 74% 72% at 50% 56%, #000 52%, transparent 88%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 82% at 50% 58%, #000 68%, transparent 98%);
+  mask-image: radial-gradient(ellipse 80% 82% at 50% 58%, #000 68%, transparent 98%);
 }
 
 .intro-start {

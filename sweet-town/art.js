@@ -1452,10 +1452,10 @@ window.Art = (function () {
 
   function drawIntroScene(g, w, h, t) {
     var sky = g.createLinearGradient(0, 0, 0, h);
-    sky.addColorStop(0, '#fff2f9');
-    sky.addColorStop(0.5, '#ffe4f0');
-    sky.addColorStop(0.75, '#f2f7e2');
-    sky.addColorStop(1, '#e3f4d8');
+    sky.addColorStop(0, '#ffe9f5');
+    sky.addColorStop(0.5, '#ffdcec');
+    sky.addColorStop(0.72, '#eef7dc');
+    sky.addColorStop(1, '#dcf2cd');
     g.fillStyle = sky;
     g.fillRect(0, 0, w, h);
     // 해
@@ -1494,13 +1494,13 @@ window.Art = (function () {
       g.restore();
     }
 
-    at(w * 0.09, h * 0.95, 1.6, function () { drawLollipopTree(g, 0, 0, 0, t); });
-    at(w * 0.93, h * 0.96, 1.6, function () { drawLollipopTree(g, 0, 0, 1, t); });
-    at(w * 0.24, h * 1.0, 1.2, function () { drawCottonBush(g, 0, 0, 0, t); });
-    at(w * 0.5, h * 0.97, 0.64, function () { drawHouse(g, 0, 0, 1, t); });
-    at(w * 0.27, h * 0.99, 1.35, function () { drawAnimal(g, 'rabbit', 0, 0, 1, t, 'right'); });
-    at(w * 0.74, h * 0.99, 1.35, function () { drawAnimal(g, 'bear', 0, 0, 1, t, 'left'); });
-    at(w * 0.64, h * 1.0, 1.45, function () { drawGirl(g, 0, 0, 1, t, false, 'right'); });
+    at(w * 0.07, h * 1.0, 1.9, function () { drawLollipopTree(g, 0, 0, 0, t); });
+    at(w * 0.94, h * 1.0, 1.9, function () { drawLollipopTree(g, 0, 0, 1, t); });
+    at(w * 0.22, h * 1.02, 1.4, function () { drawCottonBush(g, 0, 0, 0, t); });
+    at(w * 0.5, h * 1.0, 0.74, function () { drawHouse(g, 0, 0, 1, t); });
+    at(w * 0.26, h * 0.99, 1.55, function () { drawAnimal(g, 'rabbit', 0, 0, 1, t, 'right'); });
+    at(w * 0.77, h * 0.99, 1.55, function () { drawAnimal(g, 'bear', 0, 0, 1, t, 'left'); });
+    at(w * 0.64, h * 1.0, 1.65, function () { drawGirl(g, 0, 0, 1, t, false, 'right'); });
 
     // 반짝이
     for (var s = 0; s < 6; s++) {
