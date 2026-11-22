@@ -81,7 +81,7 @@ window.World = (function () {
   var npcs = [
     { id: 'somsom', kind: 'rabbit', name: '솜솜', role: '토끼', x: 11, y: 15.4, face: 'right', wander: 0 },
     { id: 'koko', kind: 'bear', name: '코코', role: '곰돌이', x: 18, y: 12.2, face: 'left', wander: 0 },
-    { id: 'jelly', kind: 'cat', name: '젤리', role: '고양이', x: 20.4, y: 16.1, face: 'left', wander: 0 },
+    { id: 'jelly', kind: 'cat', name: '젤리', role: '고양이', x: 19.6, y: 14.3, face: 'right', wander: 0 },
     { id: 'ppiak', kind: 'chick', name: '삐약', role: '병아리', x: 6, y: 15.4, face: 'right', wander: 2.4 }
   ];
   var npcById = {};
@@ -110,6 +110,7 @@ window.World = (function () {
       ask: '안녕, 엘리! 나는 곰돌이 코코야. 하얀 마시멜로 2개를 고양이 젤리에게 전해 줄래? 젤리가 마시멜로를 아주 좋아하거든.',
       busy: '마시멜로는 하얀 마시멜로 덤불에서 폴폴 주울 수 있어. 덤불 가까이 가 봐!',
       done: '와, 고마워! 젤리가 정말 기뻐할 거야.',
+      recv: '와, 마시멜로다! 코코가 보내 준 거구나. 엘리, 정말 고마워!',
       hud: '마시멜로 2개를 모아 젤리에게 전해 주기'
     },
     {
@@ -126,6 +127,7 @@ window.World = (function () {
       ask: '삐약! 나는 병아리 삐약이야. 반짝반짝 별젤리 1개를 곰돌이 코코에게 전해 줄래?',
       busy: '별젤리는 젤리 연못에서 가끔 낚여. 연못에서 낚시를 해 봐!',
       done: '삐약! 별젤리야! 반짝반짝해서 너무 예뻐!',
+      recv: '우와, 반짝반짝 별젤리다! 삐약이가 보내 준 거구나. 고마워, 엘리!',
       hud: '별젤리 1개를 낚아 코코에게 전해 주기'
     },
     {
@@ -142,6 +144,7 @@ window.World = (function () {
       ask: '엘리, 초코칩 2개를 병아리 삐약이에게 전해 줄래? 삐약이가 초코칩을 모으고 있대.',
       busy: '초코칩은 갈색 초콜릿 나무에 달려 있어! 갈색 나무를 찾아봐.',
       done: '고마워! 삐약이가 아주 좋아할 거야.',
+      recv: '삐약! 초코칩이다! 코코가 보내 줬어. 고마워, 엘리!',
       hud: '초코칩 2개를 모아 삐약에게 전해 주기'
     },
     {

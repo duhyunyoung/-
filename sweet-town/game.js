@@ -1129,7 +1129,7 @@
     Sound.success();
     Sound.coin();
     celebrateAt(npc.x * TILE, npc.y * TILE - 24, q.coins);
-    showDialogue(npc, q.done + '  대신 전해 줘서 고마워! 별 코인 ' + q.coins + '개를 받았어요!', [['고마워요!', closeDialogue, true]]);
+    showDialogue(npc, (q.recv || q.done) + '  대신 전해 줘서 고마워! 별 코인 ' + q.coins + '개를 받았어요!', [['고마워요!', closeDialogue, true]]);
     save();
     updateHud();
   }

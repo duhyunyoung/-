@@ -892,17 +892,36 @@ window.Art = (function () {
     g.stroke();
     g.restore();
 
-    // 굴뚝 (솜사탕)
+    // 굴뚝 (마시멜로)
     var chX = 108, chTop = by - 96;
-    g.fillStyle = '#fffdf8';
-    rr(g, chX - 15, chTop, 30, 40, 6);
+    var chg = g.createLinearGradient(chX - 16, 0, chX + 16, 0);
+    chg.addColorStop(0, '#fff6fb');
+    chg.addColorStop(0.45, '#ffffff');
+    chg.addColorStop(1, '#f4dee9');
+    rr(g, chX - 15, chTop, 30, 42, 8);
+    g.fillStyle = chg;
     g.fill();
-    g.fillStyle = '#f3dfe8';
-    rr(g, chX - 18, chTop - 6, 36, 10, 5);
-    g.fill();
+    g.strokeStyle = 'rgba(206,168,188,.7)';
+    g.lineWidth = 1.4;
+    g.stroke();
+    // 마시멜로 결
+    g.strokeStyle = 'rgba(206,168,188,.55)';
+    g.lineWidth = 1.2;
+    for (var mm = 1; mm <= 2; mm++) {
+      g.beginPath();
+      g.moveTo(chX - 14, chTop + mm * 14);
+      g.lineTo(chX + 14, chTop + mm * 14);
+      g.stroke();
+    }
     g.fillStyle = '#ffd0e2';
-    rr(g, chX - 9, chTop - 4, 18, 4, 2);
+    rr(g, chX - 15, chTop + 5, 30, 6, 3);
     g.fill();
+    g.fillStyle = '#fffdf8';
+    rr(g, chX - 19, chTop - 8, 38, 11, 5.5);
+    g.fill();
+    g.strokeStyle = 'rgba(206,168,188,.7)';
+    g.lineWidth = 1.2;
+    g.stroke();
     // 연기 (솜사탕 구름)
     for (var p = 0; p < 4; p++) {
       var tt = ((t || 0) * 0.35 + p * 0.25) % 1;
