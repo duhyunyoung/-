@@ -1647,6 +1647,9 @@
     return {
       coins: S.coins, inv: S.inv, owned: S.owned, placed: S.placed,
       px: Math.round(S.px * 100) / 100, py: Math.round(S.py * 100) / 100,
+      camX: Math.round(cam.x), camY: Math.round(cam.y), zoom: Math.round(view.zoom * 1000) / 1000,
+      viewW: view.w, viewH: view.h,
+      walk: walk.target ? { x: Math.round(walk.target.x * 100) / 100, y: Math.round(walk.target.y * 100) / 100 } : null,
       questIdx: S.questIdx, stage: S.stage, quest: q ? q.title : null,
       hint: hint.kind, deco: deco.on, sel: deco.sel, fishing: fishingOpen,
       dialogue: dialogueOpen, sheet: sheetOpen, intro: introOpen,
