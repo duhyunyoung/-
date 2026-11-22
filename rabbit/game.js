@@ -490,7 +490,8 @@
       top.className = 'opp-top';
       var av = document.createElement('span'); av.className = 'opp-av'; av.textContent = p.avatar;
       var nm = document.createElement('span'); nm.className = 'opp-name'; nm.textContent = p.name;
-      var ct = document.createElement('span'); ct.className = 'opp-cnt'; ct.textContent = p.hand.length;
+      var ct = document.createElement('span'); ct.className = 'opp-cnt';
+      ct.textContent = (isTarget ? '👆 ' : '') + p.hand.length;
       top.appendChild(av); top.appendChild(nm); top.appendChild(ct);
       el.appendChild(top);
 
@@ -519,12 +520,6 @@
       }
       el.appendChild(hand);
 
-      if (isTarget) {
-        var tag = document.createElement('span');
-        tag.className = 'tap-tag';
-        tag.textContent = '뽑기 👆';
-        el.appendChild(tag);
-      }
       box.appendChild(el);
     });
 
