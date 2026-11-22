@@ -337,8 +337,10 @@
     ['scrStart', 'scrGame', 'scrResult'].forEach(function (k) {
       D[k].classList.toggle('active', k === 'scr' + name.charAt(0).toUpperCase() + name.slice(1));
     });
-    if (name === 'result') D.scrResult.scrollTop = 0;
-    if (name === 'start') D.scrStart.scrollTop = 0;
+    if (name === 'result' || name === 'start') {
+      var sc = D[name === 'result' ? 'scrResult' : 'scrStart'].querySelector('.result-scroll, .start-scroll');
+      if (sc) sc.scrollTop = 0;
+    }
   }
 
   /* ---------------------------------------------------------------- 게임 준비 */

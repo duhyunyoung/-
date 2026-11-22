@@ -14,7 +14,8 @@
 <div id="app">
 
   <!-- ============ 시작 화면 ============ -->
-  <section id="scr-start" class="screen active scroll">
+  <section id="scr-start" class="screen active">
+    <div class="start-scroll">
     <div class="start">
       <div class="hero">
         <div class="hero-cards" aria-hidden="true">
@@ -64,7 +65,9 @@
           <button type="button" class="switch" id="variant-toggle" role="switch" aria-checked="false" aria-label="무작위 1장 빼기"><i></i></button>
         </div>
       </div>
+    </div>
 
+    <div class="start-foot">
       <button type="button" class="primary big" id="btn-start">게임 시작</button>
       <button type="button" class="ghost" id="btn-rules-start">? 게임 규칙 보기</button>
       <p class="foot-note">코리아보드게임즈 〈토끼잡기〉 원본 규칙을 그대로 구현한 비공식 웹 게임입니다.</p>
@@ -108,7 +111,8 @@
   </section>
 
   <!-- ============ 결과 화면 ============ -->
-  <section id="scr-result" class="screen scroll">
+  <section id="scr-result" class="screen">
+    <div class="result-scroll">
     <div class="result">
       <div class="res-emoji" id="res-emoji">🐰</div>
       <h2 id="res-title">결과</h2>
@@ -130,11 +134,12 @@
       </div>
 
       <div class="result-list" id="result-list"></div>
+    </div>
+    </div>
 
-      <div class="result-actions">
-        <button type="button" class="primary big" id="btn-again">다시 하기</button>
-        <button type="button" class="ghost" id="btn-home">처음으로</button>
-      </div>
+    <div class="result-foot">
+      <button type="button" class="primary big" id="btn-again">다시 하기</button>
+      <button type="button" class="ghost" id="btn-home">처음으로</button>
     </div>
   </section>
 

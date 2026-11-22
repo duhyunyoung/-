@@ -46,11 +46,21 @@ input{font-family:inherit}
 .hidden{display:none !important}
 
 /* ---------- 시작 / 결과 공통 ---------- */
+#scr-start,#scr-result{flex-direction:column}
+.start-scroll,.result-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.start-foot,.result-foot{
+  flex:0 0 auto;
+  padding:8px 18px calc(env(safe-area-inset-bottom) + 8px);
+  background:linear-gradient(180deg, rgba(226,240,208,0) 0%, rgba(224,239,206,.92) 35%, #def0ce 100%);
+  display:flex;flex-direction:column;gap:2px;
+}
+.start-foot > *,.result-foot > *{max-width:430px;width:100%;margin-left:auto;margin-right:auto}
+
 .start,.result{
   width:100%;
   max-width:430px;
   margin:0 auto;
-  padding:calc(env(safe-area-inset-top) + 22px) 18px calc(env(safe-area-inset-bottom) + 22px);
+  padding:calc(env(safe-area-inset-top) + 18px) 18px 10px;
   display:flex;
   flex-direction:column;
   gap:14px;
@@ -428,7 +438,7 @@ h1{
 .modal-card > .primary{margin:8px 14px 14px;border-radius:14px;padding:14px;font-size:15px}
 
 /* ---------- 결과 ---------- */
-.result{align-items:center;text-align:center;gap:10px}
+.result{align-items:center;text-align:center;gap:10px;padding-bottom:16px}
 .res-emoji{font-size:62px;line-height:1.1;margin-top:6px;animation:popIn .45s cubic-bezier(.2,1.5,.4,1) both}
 @keyframes popIn{from{transform:scale(.5);opacity:0}to{transform:none;opacity:1}}
 .result h2{margin:0;font-size:25px;font-weight:900;letter-spacing:-1px;color:var(--green-d)}
@@ -465,7 +475,8 @@ h1{
 .res-badge.win{background:#e6f6e2;color:#3f7b45}
 .res-badge.lose{background:#ffe9e2;color:#b4552b}
 
-.result-actions{width:100%;display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.result-actions{width:100%;display:none}
+.result-foot .ghost{padding:8px}
 
 /* ---------- 작은 화면 ---------- */
 @media (max-width:360px){
