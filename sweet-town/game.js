@@ -86,7 +86,6 @@
   }
 
   var S = load();
-  if (/[?&]intro=1(&|$)/.test(location.search)) S.seenIntro = false;
   var saveTimer = null;
 
   function writeSave() {
