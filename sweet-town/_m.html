@@ -6,12 +6,15 @@
 <style>
   html, body { margin: 0; padding: 0; background: #2b2430; }
   iframe { display: block; width: 390px; height: 800px; border: 0; background: #fff; }
+  body.land iframe { width: 800px; height: 390px; }
 </style>
 </head>
 <body>
 <iframe id="f" title="엘리의 간식 마을 미리보기"></iframe>
 <script>
-  var extra = location.search.indexOf('intro=1') >= 0 ? '&intro=1' : '';
+  var q = location.search;
+  if (q.indexOf('land=1') >= 0) document.body.className = 'land';
+  var extra = q.indexOf('intro=1') >= 0 ? '&intro=1' : '';
   document.getElementById('f').src = './index.html?r=' + Date.now() + extra;
 </script>
 </body>
