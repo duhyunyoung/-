@@ -560,33 +560,48 @@ window.Art = (function () {
     g.lineCap = 'round';
     g.beginPath();
     g.moveTo(0, 0);
-    g.quadraticCurveTo(sway * 0.4, -18, sway, -34);
+    g.quadraticCurveTo(sway * 0.4, -18, sway, -32);
     g.stroke();
     g.fillStyle = '#79cf8b';
-    ell(g, -10, -20, 7.5, 4.2);
+    ell(g, -12, -20, 8, 4.4);
     g.fill();
-    ell(g, 10, -24, 7, 4);
+    ell(g, 12, -24, 7.5, 4.2);
     g.fill();
-    // 초콜릿 덩어리
-    var bx = sway, by = -52;
-    var bg = g.createLinearGradient(bx - 20, by - 20, bx + 20, by + 18);
-    bg.addColorStop(0, '#a3703f');
-    bg.addColorStop(1, '#6b4023');
-    rr(g, bx - 19, by - 18, 38, 36, 10);
-    g.fillStyle = bg;
-    g.fill();
-    g.strokeStyle = 'rgba(50,26,12,.45)';
-    g.lineWidth = 1.4;
-    g.stroke();
-    g.fillStyle = '#4a2a13';
-    var chips = [[-8, -8], [6, -10], [-4, 6], [9, 4], [1, -1], [-11, 2]];
-    for (var i = 0; i < chips.length; i++) {
-      ell(g, bx + chips[i][0], by + chips[i][1], 2.1, 2.1);
+
+    function chocoChunk(x, y, w, h, rot) {
+      g.save();
+      g.translate(x, y);
+      g.rotate(rot || 0);
+      var bg = g.createLinearGradient(-w / 2, -h / 2, w / 2, h / 2);
+      bg.addColorStop(0, '#a5703f');
+      bg.addColorStop(0.55, '#8a5a35');
+      bg.addColorStop(1, '#6a4023');
+      rr(g, -w / 2, -h / 2, w, h, 6);
+      g.fillStyle = bg;
       g.fill();
+      g.strokeStyle = 'rgba(52,28,14,.4)';
+      g.lineWidth = 1.4;
+      g.stroke();
+      g.fillStyle = 'rgba(255,228,196,.3)';
+      rr(g, -w / 2 + 3, -h / 2 + 3, w * 0.42, 3.4, 1.7);
+      g.fill();
+      g.fillStyle = '#4a2a13';
+      ell(g, -w * 0.18, -h * 0.16, 1.8, 1.8);
+      g.fill();
+      ell(g, w * 0.2, h * 0.14, 1.6, 1.6);
+      g.fill();
+      g.restore();
     }
-    g.fillStyle = 'rgba(255,225,190,.28)';
-    rr(g, bx - 15, by - 14, 12, 5, 2.5);
+
+    chocoChunk(sway - 8, -50, 30, 28, 0.12);
+    chocoChunk(sway + 11, -46, 24, 24, -0.16);
+    chocoChunk(sway, -58, 26, 22, -0.06);
+    // 반짝이
+    g.globalAlpha = 0.65 + Math.sin((t || 0) * 3 + variant) * 0.25;
+    g.fillStyle = '#fff';
+    starPath(g, sway - 16, -60, 3.6, 1.5, 4);
     g.fill();
+    g.globalAlpha = 1;
     g.restore();
   }
 
