@@ -965,7 +965,7 @@
         if (dp < 1.5 && (!best || dp < best.d)) best = { d: dp, kind: 'gather', target: p };
       }
     }
-    if (!best && W.distToPond(S.px, S.py) < 1.9) {
+    if (!best && W.distToPond(S.px, S.py) < 2.2) {
       best = { d: 0, kind: 'fish', target: null };
     }
 
