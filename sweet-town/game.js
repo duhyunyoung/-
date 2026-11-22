@@ -223,7 +223,7 @@
     cv.style.width = w + 'px';
     cv.style.height = h + 'px';
     view.w = w; view.h = h; view.dpr = dpr;
-    view.zoom = clamp(Math.min(w / (9.5 * TILE), h / (8 * TILE)), 0.6, 1.6);
+    view.zoom = clamp(Math.min(w / (10.8 * TILE), h / (10 * TILE)), 0.58, 1.6);
     cameraClamp();
   }
 
@@ -296,7 +296,7 @@
 
     if (S.stage === 'offer') {
       missionWhoEl.textContent = giverName + '의 부탁';
-      missionProgEl.textContent = '기다려요';
+      missionProgEl.textContent = '새 부탁';
       missionTextEl.textContent = giverName + '에게 가서 말을 걸어 보세요!';
       return;
     }
