@@ -162,7 +162,7 @@
   }
   function stageSlotRect() {
     var r = D.stage.getBoundingClientRect();
-    var w = 76, h = 108;
+    var w = 84, h = 118;
     return { left: r.left + r.width / 2 - w / 2, top: r.top + r.height / 2 - h / 2, width: w, height: h };
   }
   function handSlotRect() {
@@ -572,7 +572,7 @@
       var rot = t * 2.4;
       var lift = Math.min(9, Math.abs(t) * Math.abs(t) * 0.55);
       el.style.left = (startX + i * step) + 'px';
-      el.style.bottom = (5 + lift) + 'px';
+      el.style.bottom = (8 + lift) + 'px';
       el.style.transform = 'rotate(' + rot + 'deg)';
       el.style.zIndex = i;
       box.appendChild(el);
