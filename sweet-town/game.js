@@ -251,6 +251,7 @@
   /* ---------------- 놀이 상태 ---------------- */
 
   var walk = { target: null, anim: 0, dust: 0 };
+  var camHold = false;
   var joy = { active: false, id: null, dx: 0, dy: 0 };
   var deco = { on: false, sel: null, hover: null };
   var hint = { kind: null, target: null, label: '말 걸기' };
@@ -821,9 +822,12 @@
     updateInteract();
 
     // 카메라
-    var k = Math.min(1, dt * 6.5);
-    cam.x += (S.px * TILE - cam.x) * k;
-    cam.y += (S.py * TILE - cam.y) * k;
+    if (camHold && (walk.target || walk.anim > 0 || joy.active)) camHold = false;
+    if (!camHold) {
+      var k = Math.min(1, dt * 6.5);
+      cam.x += (S.px * TILE - cam.x) * k;
+      cam.y += (S.py * TILE - cam.y) * k;
+    }
     cameraClamp();
   }
 
@@ -858,7 +862,7 @@
     if (hint.kind === 'talk') setActButton('말 걸기', ICON.talk);
     else if (hint.kind === 'gather') setActButton('줍기', ICON.pick);
     else if (hint.kind === 'fish') setActButton('낚시', ICON.fish);
-    else setActButton('둘러보기', ICON.talk);
+    else setActButton('말 걸기', ICON.talk);
   }
 
   var lastAct = '';
@@ -1610,6 +1614,11 @@
     terrainCanvas = W.buildTerrainCanvas();
     cam.x = S.px * TILE;
     cam.y = S.py * TILE;
+    if (!S.seenIntro) {
+      camHold = true;
+      cam.x = W.houseAnchor.x;
+      cam.y = W.houseAnchor.y - 130;
+    }
     cameraClamp();
     updateHud();
     updateInteract();
