@@ -708,7 +708,7 @@
       clearStage();
       renderBoard();
     } else {
-      setBanner('짝이 없어 ' + drawer.avatar + ' ' + esc(drawer.name) + '가 가져갔어요');
+      setBanner('짝이 없어 ' + drawer.avatar + ' ' + esc(drawer.name) + '의 손으로 들어갔어요');
       var bels = showStage([null], true);
       await sleep(520);
       var br = bels[0].getBoundingClientRect();
@@ -776,16 +776,16 @@
       if (iAmLoser) {
         D.resEmoji.textContent = '😱';
         D.resTitle.textContent = '토끼를 잡혔어요!';
-        D.resSub.textContent = loser.avatar + ' ' + loser.name + '이(가) 마지막 카드를 들고 남았어요. 다시 도전!';
+        D.resSub.textContent = loser.avatar + ' ' + loser.name + ' · 마지막 카드를 들고 남았어요. 다시 도전!';
       } else {
         D.resEmoji.textContent = '🎉';
         D.resTitle.textContent = '탈출 성공!';
-        D.resSub.textContent = loser.avatar + ' ' + loser.name + '이(가) 토끼 도둑이 됐어요. 나는 무사히 탈출!';
+        D.resSub.textContent = loser.avatar + ' ' + loser.name + ' · 토끼 도둑이 됐어요. 나는 무사히 탈출!';
       }
     } else {
       D.resEmoji.textContent = '🐰';
-      D.resTitle.textContent = loser.avatar + ' ' + loser.name + '가 토끼를 잡았어요!';
-      D.resSub.textContent = '마지막까지 카드를 들고 남은 사람이 패배 — 나머지 ' + (S.players.length - 1) + '명은 모두 승리!';
+      D.resTitle.textContent = loser.avatar + ' ' + loser.name + ' · 토끼 도둑!';
+      D.resSub.textContent = '마지막까지 카드를 들고 남은 1명이 패배 — 나머지 ' + (S.players.length - 1) + '명은 모두 승리!';
     }
 
     /* 빼둔 카드 + 마지막 남은 카드 공개 */
@@ -807,8 +807,8 @@
     var exclKey = S.excluded ? S.excluded.key : null;
     var matched = !!(loser && exclKey && loser.hand.some(function (c) { return c.key === exclKey; }));
     D.revealNote.textContent = matched
-      ? '빼둔 카드와 같은 카드가 마지막에 남았어요 — 원래라면 함께 버렸을 짝!'
-      : '빼둔 카드와 마지막에 남은 카드는 짝이 아니에요.';
+      ? '마지막에 남은 카드와 빼둔 카드가 같은 종류예요 — 둘을 나란히 놓으면 짝이 맞습니다.'
+      : '빼둔 카드와 마지막에 남은 카드는 서로 다른 카드예요.';
 
     setTimeout(function () {
       D.revealExcluded.innerHTML = '';
