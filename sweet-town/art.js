@@ -2678,27 +2678,41 @@ window.Art = (function () {
   }
 
   function furnHeartChair(g, t) {
-    shadow(g, 0, 2, 18, 6, 0.16);
+    shadow(g, 0, 2, 22, 7, 0.16);
+    // 다리
+    g.fillStyle = '#fff6ec';
+    rr(g, -18, -8, 5.5, 8, 2.7);
+    g.fill();
+    rr(g, 12.5, -8, 5.5, 8, 2.7);
+    g.fill();
+    // 좌석 (마카롱)
     g.fillStyle = '#ffe6ef';
-    rr(g, -16, -10, 32, 10, 5);
+    rr(g, -22, -16, 44, 9, 4.5);
     g.fill();
+    g.fillStyle = 'rgba(255,255,255,.7)';
+    rr(g, -19, -14.6, 38, 3.2, 1.6);
+    g.fill();
+    // 하트 등판
     g.fillStyle = '#ffb0d0';
-    heart(g, 0, -24, 15);
+    heart(g, 0, -34, 21);
     g.fill();
-    g.strokeStyle = 'rgba(220,130,170,.4)';
-    g.lineWidth = 1.4;
+    g.strokeStyle = 'rgba(214,120,160,.42)';
+    g.lineWidth = 1.5;
     g.stroke();
     g.fillStyle = '#ffd9e8';
-    heart(g, 0, -22, 10.6);
+    heart(g, 0, -32, 14.5);
     g.fill();
-    g.fillStyle = '#fff';
-    ell(g, -5, -27, 4, 2.2);
+    g.fillStyle = '#ff9ec4';
+    heart(g, 0, -30, 6.6);
     g.fill();
-    g.fillStyle = '#fff6ec';
-    rr(g, -13, -2, 4, 4, 2);
+    g.fillStyle = 'rgba(255,255,255,.9)';
+    ell(g, -8, -37, 5.4, 2.8);
     g.fill();
-    rr(g, 9, -2, 4, 4, 2);
+    g.globalAlpha = 0.55 + Math.sin((t || 0) * 2.6) * 0.25;
+    g.fillStyle = '#fffbe0';
+    starPath(g, 16, -46, 3.2, 1.3, 4);
     g.fill();
+    g.globalAlpha = 1;
   }
 
   function furnStarBed(g, t) {

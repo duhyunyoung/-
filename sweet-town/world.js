@@ -85,7 +85,7 @@ window.World = (function () {
     { id: 'ppiak', kind: 'chick', name: '삐약', role: '병아리', x: 6, y: 15.4, face: 'right', wander: 2.4 },
     // 엘리 같은 꼬마 사람 친구들 (마을 밖)
     { id: 'luna', kind: 'kid', kid: 'luna', name: '루나', role: '꼬마 친구', x: 12.4, y: 12.4, face: 'right', wander: 0 },
-    { id: 'haru', kind: 'kid', kid: 'haru', name: '하루', role: '꼬마 친구', x: 18.2, y: 12.1, face: 'left', wander: 0 },
+    { id: 'haru', kind: 'kid', kid: 'haru', name: '하루', role: '꼬마 친구', x: 20.2, y: 12.5, face: 'left', wander: 0 },
     { id: 'bora', kind: 'kid', kid: 'bora', name: '보라', role: '꼬마 친구', x: 22.4, y: 15.2, face: 'left', wander: 0 }
   ];
   var npcById = {};
@@ -167,7 +167,7 @@ window.World = (function () {
       giver: 'haru', kind: 'collect', item: 'cookie', need: 2, coins: 13,
       title: '따뜻한 쿠키 두 개',
       ask: '엘리야, 나는 하루야! 과자집 안 쿠키 오븐에서 따뜻한 쿠키 두 개를 구워 줄래? 과자집 문 앞에서 커다란 버튼을 누르면 집 안에 들어갈 수 있어!',
-      busy: '과자집 문 앞으로 가서 \'집에 들어가기\'를 눌러 봐! 안에 쿠키 오븐이 있어. 오븐 앞에서 \'쿠키 굽기\'를 누르고, 조금 기다렸다가 다시 누르면 따뜻한 쿠키를 꺼낼 수 있어!',
+      busy: '과자집 문 앞으로 가서 \'들어가기\'를 눌러 봐! 안에 쿠키 오븐이 있어. 오븐 앞에서 \'쿠키 굽기\'를 누르고, 조금 기다렸다가 \'꺼내기\'를 누르면 따뜻한 쿠키를 꺼낼 수 있어!',
       done: '와! 따뜻한 쿠키야! 냄새가 너무 좋아. 엘리 최고!',
       hud: '과자집 안 오븐에서 쿠키 2개를 구워 하루에게 가져가기'
     },
@@ -243,7 +243,7 @@ window.World = (function () {
       title: '달콤한 부탁',
       ask: loopAsks[n % loopAsks.length],
       busy: base.item === 'cookie'
-        ? '따뜻한 쿠키는 과자집 안 오븐에서 구울 수 있어! 과자집 문 앞에서 \'집에 들어가기\'를 눌러 봐.'
+        ? '따뜻한 쿠키는 과자집 안 오븐에서 구울 수 있어! 과자집 문 앞에서 \'들어가기\'를 눌러 봐.'
         : place[base.item] + '에서 ' + names[base.item] + '을(를) 모을 수 있어! 가까이 가서 톡 눌러 봐.',
       done: '와, 고맙다! 역시 엘리는 최고야!',
       hud: names[base.item] + ' ' + base.need + '개를 모아 ' + npcById[giver].name + '에게 가져가기'

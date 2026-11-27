@@ -7,6 +7,12 @@
   var SAVE_KEY = 'sweetTown.v1';
 
   function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+  function josa(word, withJong, withoutJong) {
+    if (!word) return withJong;
+    var c = word.charCodeAt(word.length - 1);
+    if (c >= 0xAC00 && c <= 0xD7A3) return ((c - 0xAC00) % 28) ? withJong : withoutJong;
+    return withJong;
+  }
   function dist(ax, ay, bx, by) { var dx = ax - bx, dy = ay - by; return Math.sqrt(dx * dx + dy * dy); }
   function $(id) { return document.getElementById(id); }
 
@@ -354,7 +360,7 @@
       missionProgEl.textContent = have > 0 ? '완료' : '0/1';
       missionTextEl.textContent = have > 0
         ? '놓았어요! ' + giverName + '에게 알려 주세요!'
-        : FURN_NAME[q.item] + '을(를) 상점에서 사서 ' + (q.room ? '과자집 안에서 ' : '마을 빈 땅에 ') + '꾸미기로 놓아 주세요';
+        : FURN_NAME[q.item] + josa(FURN_NAME[q.item], '을', '를') + ' 상점에서 사서 ' + (q.room ? '과자집 안에서 ' : '마을 빈 땅에 ') + '꾸미기로 놓아 주세요';
       return;
     }
 
@@ -680,6 +686,8 @@
   function render(t) {
     ctx.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);
     ctx.clearRect(0, 0, view.w, view.h);
+    ctx.fillStyle = isIn() ? '#ffe3ee' : '#cbeab9';
+    ctx.fillRect(0, 0, view.w, view.h);
     ctx.save();
     ctx.translate(view.w / 2, view.h / 2);
     ctx.scale(view.zoom, view.zoom);
@@ -763,7 +771,7 @@
     for (i = 0; i < S.placedIn.length; i++) {
       (function (p) {
         var bx = (p.x + 0.5) * TILE, by = (p.y + 0.95) * TILE;
-        list.push({ y: by, f: function () { A.drawFurniture(ctx, p.t, bx, by, 1.02, t); } });
+        list.push({ y: by, f: function () { A.drawFurniture(ctx, p.t, bx, by, 1.12, t); } });
       })(S.placedIn[i]);
     }
     for (i = 0; i < W.roomNpcs.length; i++) {
@@ -1128,13 +1136,13 @@
     if (hint.kind === 'talk') setActButton('말 걸기', ICON.talk);
     else if (hint.kind === 'gather') setActButton('줍기', ICON.pick);
     else if (hint.kind === 'fish') setActButton('낚시', ICON.fish);
-    else if (hint.kind === 'enter') setActButton('집에 들어가기', ICON.house);
-    else if (hint.kind === 'exit') setActButton('마을로 나가기', ICON.door);
+    else if (hint.kind === 'enter') setActButton('들어가기', ICON.house);
+    else if (hint.kind === 'exit') setActButton('나가기', ICON.door);
     else if (hint.kind === 'oven') {
-      if (oven.cooking) setActButton('기다리는 중', ICON.oven);
-      else if (oven.done) setActButton('쿠키 꺼내기', ICON.oven);
+      if (oven.cooking) setActButton('기다려요', ICON.oven);
+      else if (oven.done) setActButton('꺼내기', ICON.oven);
       else setActButton('쿠키 굽기', ICON.oven);
-    } else if (hint.kind === 'cake') setActButton('케이크 먹기', ICON.cake);
+    } else if (hint.kind === 'cake') setActButton('케이크', ICON.cake);
     else if (isIn()) setActButton('말 걸기', ICON.talk);
     else setActButton('말 걸기', ICON.talk);
   }
@@ -1368,7 +1376,7 @@
 
     if (S.stage === 'active' && q.kind === 'deliver' && npc.id === q.to) {
       if ((S.inv[q.item] || 0) >= q.need) completeAtTarget(q, npc);
-      else showDialogue(npc, '고마워! 여기서 기다릴게. ' + ITEMS[q.item].name + '을(를) ' + q.need + '개 모아서 와 줘!', [['알겠어요!', closeDialogue, true]]);
+      else showDialogue(npc, '고마워! 여기서 기다릴게. ' + ITEMS[q.item].name + josa(ITEMS[q.item].name, '을', '를') + ' ' + q.need + '개 모아서 와 줘!', [['알겠어요!', closeDialogue, true]]);
       return;
     }
 
@@ -1659,7 +1667,7 @@
     save();
     updateHud();
     buildShop();
-    toast(it.name + '을(를) 샀어요! 꾸미기로 놓아 보세요', 'gold');
+    toast(it.name + josa(it.name, '을', '를') + ' 샀어요! 꾸미기로 놓아 보세요', 'gold');
     addCoinPart(S.px * TILE, S.py * TILE - 40);
   }
 
@@ -1742,7 +1750,7 @@
       decoItems.appendChild(sb);
     }
     decoHint.textContent = deco.sel
-      ? (FURN_NAME[deco.sel] + '을(를) 놓을 곳을 톡 누르세요')
+      ? (FURN_NAME[deco.sel] + josa(FURN_NAME[deco.sel], '을', '를') + ' 놓을 곳을 톡 누르세요')
       : '놓을 가구를 골라 주세요';
   }
 
@@ -1763,7 +1771,7 @@
       Sound.pop();
       save();
       buildDecoBar();
-      toast(FURN_NAME[existing.t] + '을(를) 가져왔어요');
+      toast(FURN_NAME[existing.t] + josa(FURN_NAME[existing.t], '을', '를') + ' 가져왔어요');
       return;
     }
     if (!deco.sel) {
@@ -1774,7 +1782,7 @@
     var selIt = null;
     for (var s = 0; s < W.shop.length; s++) if (W.shop[s].id === deco.sel) selIt = W.shop[s];
     if (selIt && !itemHere(selIt)) {
-      toast(selIt.name + '은(는) ' + (isIn() ? '마을에서' : '과자집 안에서') + ' 놓을 수 있어요');
+      toast(selIt.name + josa(selIt.name, '은', '는') + ' ' + (isIn() ? '마을에서' : '과자집 안에서') + ' 놓을 수 있어요');
       Sound.nope();
       return;
     }
@@ -1822,8 +1830,8 @@
       '<b>친구에게 말을 걸어요.</b> 동물 친구와 꼬마 친구 가까이 가면 오른쪽 아래 커다란 버튼이 <b>말 걸기</b>로 바뀌어요.',
       '<b>간식을 모아요.</b> 롤리팝 나무와 솜사탕 덤불, 마시멜로 덤불 가까이 가서 <b>줍기</b>를 눌러요.',
       '<b>연못에서 낚시해요.</b> 젤리 연못 가까이 가서 <b>낚시</b>를 누르고, 초록색 칸에 올 때 <b>톡!</b>',
-      '<b>과자집에 들어가요.</b> 과자집 문 앞에서 <b>집에 들어가기</b>를 누르면 집 안으로 들어가요. 안에서 <b>마을로 나가기</b>를 누르면 나와요.',
-      '<b>집 안 쿠키를 구워요.</b> 쿠키 오븐 앞에서 <b>쿠키 굽기</b>를 누르고, 조금 기다렸다가 <b>쿠키 꺼내기</b>를 눌러요.',
+      '<b>과자집에 들어가요.</b> 과자집 문 앞에서 <b>들어가기</b>를 누르면 집 안으로 들어가요. 안에서 <b>나가기</b>를 누르면 나와요.',
+      '<b>집 안 쿠키를 구워요.</b> 쿠키 오븐 앞에서 <b>쿠키 굽기</b>를 누르고, 조금 기다렸다가 <b>꺼내기</b>를 눌러요.',
       '<b>별 코인으로 상점에서 가구를 사요.</b> 마을 가구와 과자집 안 가구가 있어요.',
       '<b>꾸미기</b>를 누르면 점선 칸을 톡 눌러 가구를 놓거나 다시 가져올 수 있어요. 집 안과 마을은 따로 저장돼요.',
       '놀이는 폰에 저절로 저장돼요. 껐다 켜도 우리 마을과 과자집이 그대로 남아 있어요.'
