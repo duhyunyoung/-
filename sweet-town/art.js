@@ -2470,50 +2470,66 @@ window.Art = (function () {
 
   function drawCottonBed(g, cx, baseY, scale, t, pal) {
     var p = pal || { frame: '#e8b7cf', sheet: '#ffd9e8', pillow: '#fffafc', star: '#ffd45c' };
+    var tt = t || 0;
     g.save();
     g.translate(cx, baseY);
     g.scale(scale || 1, scale || 1);
-    shadow(g, 0, 2, 32, 8, 0.17);
+    shadow(g, 0, 2, 33, 8, 0.17);
+    // 다리
+    g.fillStyle = '#fff6ec';
+    rr(g, -30, -9, 7, 9, 3.5);
+    g.fill();
+    rr(g, 23, -9, 7, 9, 3.5);
+    g.fill();
     // 머리판
     g.fillStyle = p.frame;
-    rr(g, -32, -44, 64, 44, 14);
+    rr(g, -35, -45, 16, 45, 8);
     g.fill();
-    g.fillStyle = 'rgba(255,255,255,.4)';
-    rr(g, -28, -40, 56, 8, 4);
+    g.strokeStyle = 'rgba(255,255,255,.5)';
+    g.lineWidth = 2;
+    rr(g, -32.5, -41, 11, 11, 5);
+    g.stroke();
+    // 매트리스
+    g.fillStyle = '#fffaf5';
+    rr(g, -35, -27, 70, 20, 8);
     g.fill();
+    g.strokeStyle = 'rgba(214,172,192,.45)';
+    g.lineWidth = 1.2;
+    g.stroke();
     // 이불
     g.fillStyle = p.sheet;
-    rr(g, -30, -24, 60, 24, 12);
+    rr(g, -17, -29, 51, 19, 8);
     g.fill();
-    // 솜사탕 이불 폭신함
-    for (var i = 0; i < 4; i++) {
-      var px = -22 + i * 15;
-      var pg = g.createRadialGradient(px - 2, -26, 1, px, -22, 10);
-      pg.addColorStop(0, '#ffffff');
-      pg.addColorStop(1, p.sheet);
-      circ(g, px, -22, 8.4);
-      g.fillStyle = pg;
-      g.fill();
-    }
+    // 이불 윗단을 접은 자리
+    g.fillStyle = 'rgba(255,255,255,.92)';
+    rr(g, -19, -31, 55, 7.5, 3.8);
+    g.fill();
     // 베개
     g.fillStyle = p.pillow;
-    rr(g, -26, -38, 22, 14, 7);
+    rr(g, -33, -33, 21, 14, 7);
     g.fill();
-    g.strokeStyle = 'rgba(220,180,200,.5)';
+    g.strokeStyle = 'rgba(220,182,202,.6)';
     g.lineWidth = 1;
     g.stroke();
-    // 별
-    starPath(g, 8, -34, 6.4, 2.8, 5);
+    g.fillStyle = 'rgba(255,222,236,.7)';
+    rr(g, -30, -30.5, 15, 4, 2);
+    g.fill();
+    // 별 무늬
+    starPath(g, 9, -21, 6.6, 2.9, 5);
     g.fillStyle = p.star;
     g.fill();
-    g.fillStyle = 'rgba(255,255,255,.8)';
-    circ(g, 6, -36, 1.6);
+    g.fillStyle = 'rgba(255,255,255,.85)';
+    circ(g, 7, -23, 1.7);
+    g.fill();
+    starPath(g, 24, -14.5, 3.4, 1.4, 5);
+    g.fillStyle = 'rgba(255,255,255,.9)';
     g.fill();
     // 반짝이
-    g.globalAlpha = 0.5 + Math.sin((t || 0) * 2.6) * 0.3;
+    g.globalAlpha = 0.45 + Math.sin(tt * 2.6) * 0.3;
     g.fillStyle = '#fffbe0';
-    starPath(g, 18, -42, 3, 1.2, 4);
+    starPath(g, 18, -38, 3.2, 1.3, 4);
     g.fill();
+    g.globalAlpha = 1;
     g.restore();
   }
 

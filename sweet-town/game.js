@@ -396,7 +396,7 @@
     c.style.width = size + 'px'; c.style.height = size + 'px';
     var g = c.getContext('2d');
     g.scale(dpr, dpr);
-    A.drawFurniture(g, id, size / 2, size * 0.95, size / 82, 0);
+    A.drawFurniture(g, id, size / 2, size * 0.96, size / 74, 0);
     return c;
   }
 
@@ -1615,7 +1615,7 @@
 
         var th = document.createElement('div');
         th.className = 'shop-thumb';
-        th.appendChild(thumbFurniture(it.id, 62));
+        th.appendChild(thumbFurniture(it.id, 66));
         card.appendChild(th);
 
         var nm = document.createElement('div');
