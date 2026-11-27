@@ -82,16 +82,23 @@ window.World = (function () {
     { id: 'somsom', kind: 'rabbit', name: '솜솜', role: '토끼', x: 11, y: 15.4, face: 'right', wander: 0 },
     { id: 'koko', kind: 'bear', name: '코코', role: '곰돌이', x: 18, y: 12.2, face: 'left', wander: 0 },
     { id: 'jelly', kind: 'cat', name: '젤리', role: '고양이', x: 19.6, y: 14.3, face: 'right', wander: 0 },
-    { id: 'ppiak', kind: 'chick', name: '삐약', role: '병아리', x: 6, y: 15.4, face: 'right', wander: 2.4 }
+    { id: 'ppiak', kind: 'chick', name: '삐약', role: '병아리', x: 6, y: 15.4, face: 'right', wander: 2.4 },
+    // 엘리 같은 꼬마 사람 친구들 (마을 밖)
+    { id: 'luna', kind: 'kid', kid: 'luna', name: '루나', role: '꼬마 친구', x: 12.4, y: 12.4, face: 'right', wander: 0 },
+    { id: 'haru', kind: 'kid', kid: 'haru', name: '하루', role: '꼬마 친구', x: 18.2, y: 12.1, face: 'left', wander: 0 },
+    { id: 'bora', kind: 'kid', kid: 'bora', name: '보라', role: '꼬마 친구', x: 22.4, y: 15.2, face: 'left', wander: 0 }
   ];
   var npcById = {};
-  for (i = 0; i < npcs.length; i++) {
-    npcs[i].home = { x: npcs[i].x, y: npcs[i].y };
-    npcs[i].tx = npcs[i].x;
-    npcs[i].ty = npcs[i].y;
-    npcs[i].wait = Math.random() * 2;
-    npcById[npcs[i].id] = npcs[i];
+  function prepNpc(n) {
+    n.home = { x: n.x, y: n.y };
+    n.tx = n.x;
+    n.ty = n.y;
+    n.wait = Math.random() * 2;
+    if (!n.where) n.where = 'out';
+    npcById[n.id] = n;
+    return n;
   }
+  for (i = 0; i < npcs.length; i++) prepNpc(npcs[i]);
 
   /* ---------- 부탁(미션) ---------- */
 
@@ -154,6 +161,48 @@ window.World = (function () {
       busy: '상점에서 롤리팝 가로등을 사고, 꾸미기 버튼을 눌러 빈 땅을 톡 누르면 돼!',
       done: '와아, 마을이 반짝반짝 밝아졌어! 정말 고마워!',
       hud: '롤리팝 가로등을 사서 마을에 놓기'
+    },
+    /* ---- 2차 업그레이드: 꼬마 친구들과 과자집 안 부탁 ---- */
+    {
+      giver: 'haru', kind: 'collect', item: 'cookie', need: 2, coins: 13,
+      title: '따뜻한 쿠키 두 개',
+      ask: '엘리야, 나는 하루야! 과자집 안 쿠키 오븐에서 따뜻한 쿠키 두 개를 구워 줄래? 과자집 문 앞에서 커다란 버튼을 누르면 집 안에 들어갈 수 있어!',
+      busy: '과자집 문 앞으로 가서 \'집에 들어가기\'를 눌러 봐! 안에 쿠키 오븐이 있어. 오븐 앞에서 \'쿠키 굽기\'를 누르고, 조금 기다렸다가 다시 누르면 따뜻한 쿠키를 꺼낼 수 있어!',
+      done: '와! 따뜻한 쿠키야! 냄새가 너무 좋아. 엘리 최고!',
+      hud: '과자집 안 오븐에서 쿠키 2개를 구워 하루에게 가져가기'
+    },
+    {
+      giver: 'momo', kind: 'collect', item: 'cotton', need: 3, coins: 14,
+      title: '폭신폭신 솜사탕 이불',
+      ask: '엘리야! 나는 모모야. 이 침대 이불에 폭신한 솜사탕을 올리고 싶어. 마을 솜사탕 덤불에서 3개만 주워 줄래?',
+      busy: '솜사탕은 마을의 분홍 덤불에서 폴폴 주울 수 있어. 과자집 밖으로 나가서 모아 와!',
+      done: '우와, 폭신폭신! 이불이 구름 같아! 고마워, 엘리!',
+      hud: '솜사탕 3개를 모아 과자집 안 모모에게 가져가기'
+    },
+    {
+      giver: 'luna', kind: 'place', item: 'heartchair', room: true, need: 1, coins: 15,
+      title: '과자집 하트 의자',
+      ask: '엘리, 나는 루나야! 과자집 안에 하트 마카롱 의자를 놓으면 정말 예쁠 것 같아. 상점에서 사서 과자집 안에 놓아 줄래?',
+      busy: '상점에서 하트 마카롱 의자를 사고, 과자집 안에 들어가서 꾸미기 버튼을 눌러 봐!',
+      done: '와아, 하트 의자다! 과자집이 더 예뻐졌어!',
+      hud: '하트 마카롱 의자를 사서 과자집 안에 놓기'
+    },
+    {
+      giver: 'bora', kind: 'place', item: 'rainbowarch', need: 1, coins: 16,
+      title: '무지개 사탕 아치',
+      ask: '엘리야, 나는 보라야! 마을 길에 무지개 사탕 아치를 세우면 멋질 거야. 상점에서 사서 빈 땅에 놓아 줄래?',
+      busy: '상점에서 무지개 사탕 아치를 사고, 꾸미기를 눌러 마을 빈 땅을 톡 눌러 봐!',
+      done: '우와, 무지개가 생겼어! 정말 예뻐! 고마워!',
+      hud: '무지개 사탕 아치를 사서 마을에 놓기'
+    },
+    {
+      giver: 'momo', kind: 'deliver', item: 'cookie', need: 1, to: 'haru', coins: 17,
+      title: '하루에게 쿠키',
+      ask: '엘리야, 밖에 있는 하루가 쿠키를 아주 좋아해. 오븐에서 따뜻한 쿠키 하나를 구워서 하루에게 전해 줄래?',
+      busy: '쿠키 오븐 앞에서 쿠키를 구워 봐! 그다음 과자집 밖으로 나가 하루에게 가면 돼.',
+      done: '고마워! 하루가 정말 기뻐할 거야.',
+      recv: '와, 따뜻한 쿠키다! 모모가 보내 준 거구나. 고마워, 엘리!',
+      hud: '따뜻한 쿠키 1개를 구워 하루에게 전해 주기'
     }
   ];
 
@@ -163,9 +212,10 @@ window.World = (function () {
     { kind: 'collect', item: 'cotton', need: 3 },
     { kind: 'collect', item: 'choco', need: 2 },
     { kind: 'collect', item: 'gummy', need: 2 },
-    { kind: 'collect', item: 'starjelly', need: 1 }
+    { kind: 'collect', item: 'starjelly', need: 1 },
+    { kind: 'collect', item: 'cookie', need: 1 }
   ];
-  var loopGivers = ['somsom', 'koko', 'jelly', 'ppiak'];
+  var loopGivers = ['somsom', 'koko', 'jelly', 'ppiak', 'momo', 'luna', 'haru', 'bora'];
   var loopAsks = [
     '엘리야, 오늘도 와 줬구나! 맛있는 간식이 조금 더 필요해. 모아다 줄래?',
     '엘리, 마을 친구들이 간식을 기다리고 있어! 하나씩 모아 주면 정말 좋겠어.',
@@ -178,11 +228,11 @@ window.World = (function () {
     var giver = loopGivers[n % loopGivers.length];
     var names = {
       candy: '딸기 사탕', marshmallow: '마시멜로', cotton: '솜사탕',
-      choco: '초코칩', gummy: '구미베어', starjelly: '별젤리'
+      choco: '초코칩', gummy: '구미베어', starjelly: '별젤리', cookie: '따뜻한 쿠키'
     };
     var place = {
       candy: '롤리팝 나무', marshmallow: '마시멜로 덤불', cotton: '솜사탕 덤불',
-      choco: '초콜릿 나무', gummy: '젤리 연못', starjelly: '젤리 연못'
+      choco: '초콜릿 나무', gummy: '젤리 연못', starjelly: '젤리 연못', cookie: '과자집 안 쿠키 오븐'
     };
     return {
       giver: giver,
@@ -192,7 +242,9 @@ window.World = (function () {
       coins: 8 + Math.min(12, Math.floor(n / 2)),
       title: '달콤한 부탁',
       ask: loopAsks[n % loopAsks.length],
-      busy: place[base.item] + '에서 ' + names[base.item] + '을(를) 모을 수 있어! 가까이 가서 톡 눌러 봐.',
+      busy: base.item === 'cookie'
+        ? '따뜻한 쿠키는 과자집 안 오븐에서 구울 수 있어! 과자집 문 앞에서 \'집에 들어가기\'를 눌러 봐.'
+        : place[base.item] + '에서 ' + names[base.item] + '을(를) 모을 수 있어! 가까이 가서 톡 눌러 봐.',
       done: '와, 고맙다! 역시 엘리는 최고야!',
       hud: names[base.item] + ' ' + base.need + '개를 모아 ' + npcById[giver].name + '에게 가져가기'
     };
@@ -206,8 +258,262 @@ window.World = (function () {
     { id: 'lamppost', name: '롤리팝 가로등', price: 6, desc: '반짝반짝 불이 켜져요' },
     { id: 'macaron', name: '마카롱 테이블', price: 8, desc: '달콤한 간식이 놓여 있어요' },
     { id: 'sofa', name: '솜사탕 소파', price: 9, desc: '폭신폭신 앉고 싶어요' },
-    { id: 'fountain', name: '초코 분수', price: 12, desc: '초콜릿이 졸졸 흘러요' }
+    { id: 'fountain', name: '초코 분수', price: 12, desc: '초콜릿이 졸졸 흘러요' },
+    { id: 'gummylamp', name: '곰젤리 램프', price: 7, desc: '말랑곰이 환하게 비춰요', where: 'both' },
+    { id: 'cakefountain', name: '딸기 케이크 분수', price: 13, desc: '딸기 시럽이 졸졸 흘러요', where: 'out' },
+    { id: 'heartchair', name: '하트 마카롱 의자', price: 8, desc: '하트 모양 폭신 의자', where: 'in' },
+    { id: 'starbed', name: '별빛 솜사탕 침대', price: 14, desc: '별이 반짝이는 침대', where: 'in' },
+    { id: 'ovenbrick', name: '쿠키 오븐 장식', price: 10, desc: '작은 오븐이 따뜻해요', where: 'in' },
+    { id: 'rainbowarch', name: '무지개 사탕 아치', price: 16, desc: '무지개 사탕 문이 생겨요', where: 'out' }
   ];
+
+  /* ---------- 과자집 안 (실내 맵) ---------- */
+
+  var ROOM_W = 11, ROOM_H = 9;
+  var ROOM_WORLD_W = ROOM_W * TILE, ROOM_WORLD_H = ROOM_H * TILE;
+
+  var room = {
+    door: { x: 5.5, y: 8.25 },
+    enter: { x: 5.5, y: 6.6 },
+    oven: { x: 2.1, y: 3.15 },
+    cake: { x: 4.3, y: 3.5 },
+    bed: { x: 8.6, y: 3.4 },
+    fire: { x: 6.85, y: 2.8 }
+  };
+  var doorOut = { x: 15.5, y: 11.5 };
+
+  var roomNpcs = [
+    { id: 'momo', kind: 'kid', kid: 'momo', name: '모모', role: '꼬마 친구', x: 6.6, y: 4.8, face: 'left', wander: 0, where: 'in' }
+  ];
+  for (i = 0; i < roomNpcs.length; i++) prepNpc(roomNpcs[i]);
+
+  var roomBlockers = [
+    { x: 2.1, y: 3.0, r: 0.9 },
+    { x: 4.3, y: 3.5, r: 0.92 },
+    { x: 8.6, y: 3.35, r: 0.98 },
+    { x: 6.85, y: 2.8, r: 0.86 }
+  ];
+
+  function roomCanStand(px, py) {
+    if (px < 1.15 || px > ROOM_W - 1.15 || py < 2.3 || py > ROOM_H - 0.9) return false;
+    for (var k = 0; k < roomBlockers.length; k++) {
+      var b = roomBlockers[k];
+      var dx = px - b.x, dy = py - b.y;
+      if (dx * dx + dy * dy < b.r * b.r) return false;
+    }
+    for (var n = 0; n < roomNpcs.length; n++) {
+      var ndx = px - roomNpcs[n].x, ndy = py - roomNpcs[n].y;
+      if (ndx * ndx + ndy * ndy < 0.44) return false;
+    }
+    return true;
+  }
+
+  function roomPlaceable(tx, ty) {
+    if (tx < 1 || tx > ROOM_W - 2 || ty < 2 || ty > ROOM_H - 2) return false;
+    if (ty === ROOM_H - 2 && Math.abs(tx - 5) <= 1) return false;
+    var px = tx + 0.5, py = ty + 0.5;
+    for (var k = 0; k < roomBlockers.length; k++) {
+      var b = roomBlockers[k];
+      if (Math.abs(px - b.x) < b.r + 0.32 && Math.abs(py - b.y) < b.r + 0.32) return false;
+    }
+    for (var n = 0; n < roomNpcs.length; n++) {
+      if (Math.abs(px - roomNpcs[n].x) < 1.15 && Math.abs(py - roomNpcs[n].y) < 1.15) return false;
+    }
+    return true;
+  }
+
+  function buildRoomCanvas() {
+    var cv = document.createElement('canvas');
+    cv.width = ROOM_WORLD_W;
+    cv.height = ROOM_WORLD_H;
+    var g = cv.getContext('2d');
+    var wallH = 2.1 * TILE;
+    var floorTop = wallH;
+
+    // 벽
+    var wg = g.createLinearGradient(0, 0, 0, wallH);
+    wg.addColorStop(0, '#fff2f8');
+    wg.addColorStop(1, '#ffdcec');
+    g.fillStyle = wg;
+    g.fillRect(0, 0, ROOM_WORLD_W, wallH);
+
+    // 벽지 줄무늬
+    g.fillStyle = 'rgba(255,255,255,.45)';
+    for (var sx = 0; sx < ROOM_WORLD_W; sx += 32) g.fillRect(sx + 4, 0, 13, wallH);
+
+    // 벽지 하트
+    for (var hy = 22; hy < wallH - 14; hy += 30) {
+      for (var hx = 22; hx < ROOM_WORLD_W; hx += 62) {
+        g.fillStyle = 'rgba(255,168,200,.32)';
+        A.heartPath(g, hx + (hy % 60 ? 16 : 0), hy, 3.6);
+        g.fill();
+      }
+    }
+
+    // 바닥 (체크)
+    var pal = ['#fff4e8', '#ffe8f0'];
+    for (var fy = 0; fy < ROOM_H; fy++) {
+      for (var fx = 0; fx < ROOM_W; fx++) {
+        var px = fx * TILE, py = floorTop + fy * TILE;
+        g.fillStyle = pal[(fx + fy) % 2];
+        g.fillRect(px, py, TILE, TILE);
+        g.strokeStyle = 'rgba(255,208,224,.5)';
+        g.lineWidth = 1;
+        g.strokeRect(px + 0.5, py + 0.5, TILE - 1, TILE - 1);
+        if ((fx * 7 + fy * 3) % 5 === 0) {
+          g.fillStyle = 'rgba(255,188,214,.45)';
+          A.circ(g, px + 11 + ((fx + fy) % 3) * 7, py + 13, 1.6);
+          g.fill();
+          A.circ(g, px + 27, py + 27, 1.2);
+          g.fill();
+        }
+      }
+    }
+
+    // 가운데 러그
+    var rugY = floorTop + TILE * 3.5;
+    A.ell(g, ROOM_WORLD_W / 2, rugY, 140, 72);
+    g.fillStyle = 'rgba(255,198,220,.5)';
+    g.fill();
+    A.ell(g, ROOM_WORLD_W / 2, rugY, 122, 59);
+    g.fillStyle = 'rgba(255,243,249,.88)';
+    g.fill();
+    g.save();
+    g.setLineDash([8, 8]);
+    g.strokeStyle = 'rgba(255,166,198,.5)';
+    g.lineWidth = 3;
+    A.ell(g, ROOM_WORLD_W / 2, rugY, 131, 65);
+    g.stroke();
+    g.restore();
+
+    // 걸레받이
+    g.fillStyle = '#ffd2e3';
+    g.fillRect(0, wallH - 9, ROOM_WORLD_W, 9);
+    g.fillStyle = 'rgba(255,255,255,.65)';
+    g.fillRect(0, wallH - 11, ROOM_WORLD_W, 3);
+
+    // 벽지 원석이 창
+    function jellyWindow(wx) {
+      var wy = 44, ww = 60, wh = 48;
+      g.fillStyle = '#fffaf4';
+      A.rr(g, wx - ww / 2 - 6, wy - wh / 2 - 6, ww + 12, wh + 12, 13);
+      g.fill();
+      var jg = g.createLinearGradient(wx - ww / 2, wy - wh / 2, wx + ww / 2, wy + wh / 2);
+      jg.addColorStop(0, '#ffe0ef');
+      jg.addColorStop(0.5, '#d9f0ff');
+      jg.addColorStop(1, '#ffd3e6');
+      A.rr(g, wx - ww / 2, wy - wh / 2, ww, wh, 8);
+      g.fillStyle = jg;
+      g.fill();
+      g.strokeStyle = '#fff';
+      g.lineWidth = 4;
+      g.beginPath();
+      g.moveTo(wx, wy - wh / 2);
+      g.lineTo(wx, wy + wh / 2);
+      g.moveTo(wx - ww / 2, wy);
+      g.lineTo(wx + ww / 2, wy);
+      g.stroke();
+      g.fillStyle = 'rgba(255,255,255,.85)';
+      g.beginPath();
+      g.moveTo(wx - 17, wy - 15);
+      g.lineTo(wx - 4, wy - 2);
+      g.lineTo(wx - 19, wy + 3);
+      g.closePath();
+      g.fill();
+      // 예쁜 커튼
+      g.fillStyle = 'rgba(255,175,206,.8)';
+      for (var c = 0; c < 2; c++) {
+        var cx2 = wx + (c ? 1 : -1) * (ww / 2 + 9);
+        g.beginPath();
+        g.moveTo(cx2 - 9, wy - wh / 2 - 6);
+        g.quadraticCurveTo(cx2 + 9, wy, cx2 - 9, wy + wh / 2 + 6);
+        g.closePath();
+        g.fill();
+      }
+    }
+    jellyWindow(2.6 * TILE);
+    jellyWindow(8.4 * TILE);
+
+    // 작은 벽시계
+    A.circ(g, 5.5 * TILE, 30, 12);
+    g.fillStyle = '#fffaf4';
+    g.fill();
+    g.strokeStyle = '#ffb7d3';
+    g.lineWidth = 3;
+    g.stroke();
+    g.strokeStyle = '#c984a4';
+    g.lineWidth = 1.6;
+    g.lineCap = 'round';
+    g.beginPath();
+    g.moveTo(5.5 * TILE, 30);
+    g.lineTo(5.5 * TILE + 4, 25);
+    g.moveTo(5.5 * TILE, 30);
+    g.lineTo(5.5 * TILE - 4, 33);
+    g.stroke();
+
+    // 좌우 벽
+    g.fillStyle = '#ffe2ef';
+    g.fillRect(0, 0, TILE, ROOM_WORLD_H);
+    g.fillRect(ROOM_WORLD_W - TILE, 0, TILE, ROOM_WORLD_H);
+    g.fillStyle = 'rgba(214,150,180,.22)';
+    g.fillRect(TILE - 6, 0, 6, ROOM_WORLD_H);
+    g.fillRect(ROOM_WORLD_W - TILE, 0, 6, ROOM_WORLD_H);
+
+    // 아래 벽 + 문
+    var by = (ROOM_H - 1) * TILE;
+    g.fillStyle = '#ffe2ef';
+    g.fillRect(TILE, by, ROOM_WORLD_W - TILE * 2, ROOM_WORLD_H - by);
+    g.fillStyle = 'rgba(214,150,180,.22)';
+    g.fillRect(TILE, by, ROOM_WORLD_W - TILE * 2, 5);
+
+    var dCx = room.door.x * TILE, dW = 80;
+    var dg2 = g.createLinearGradient(0, by - 90, 0, ROOM_WORLD_H);
+    dg2.addColorStop(0, '#fff9e4');
+    dg2.addColorStop(1, '#ffe3ae');
+    g.beginPath();
+    g.moveTo(dCx - dW / 2, ROOM_WORLD_H);
+    g.lineTo(dCx - dW / 2, by - 30);
+    g.quadraticCurveTo(dCx, by - 92, dCx + dW / 2, by - 30);
+    g.lineTo(dCx + dW / 2, ROOM_WORLD_H);
+    g.closePath();
+    g.fillStyle = dg2;
+    g.fill();
+    g.strokeStyle = '#ffb7d3';
+    g.lineWidth = 7;
+    g.stroke();
+    g.strokeStyle = 'rgba(255,255,255,.75)';
+    g.lineWidth = 2.4;
+    g.stroke();
+    // 문 밖 초록 (마을)
+    g.fillStyle = '#cfeab8';
+    g.fillRect(dCx - dW / 2 + 6, ROOM_WORLD_H - 18, dW - 12, 18);
+    g.fillStyle = '#b6dfa0';
+    for (var gg = 0; gg < 5; gg++) {
+      A.circ(g, dCx - dW / 2 + 12 + gg * 14, ROOM_WORLD_H - 18, 5);
+      g.fill();
+    }
+    // 문가 매트
+    A.ell(g, dCx, by - 10, 34, 11);
+    g.fillStyle = '#ffd9e8';
+    g.fill();
+    A.ell(g, dCx, by - 10, 27, 8);
+    g.fillStyle = '#fff6fb';
+    g.fill();
+    g.fillStyle = '#d68fae';
+    g.font = 'bold 11px "Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif';
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.fillText('마을로', dCx, by - 10);
+
+    // 따뜻한 빛
+    var warm = g.createRadialGradient(ROOM_WORLD_W / 2, wallH + 60, 20, ROOM_WORLD_W / 2, wallH + 60, 260);
+    warm.addColorStop(0, 'rgba(255,240,200,.22)');
+    warm.addColorStop(1, 'rgba(255,240,200,0)');
+    g.fillStyle = warm;
+    g.fillRect(0, 0, ROOM_WORLD_W, ROOM_WORLD_H);
+
+    return cv;
+  }
 
   /* ---------- 지도 그리기 (한 번만 그려 두고 재사용) ---------- */
 
@@ -461,6 +767,10 @@ window.World = (function () {
     quests: quests, loopQuest: loopQuest, shop: shop,
     buildTerrainCanvas: buildTerrainCanvas,
     terrainAt: terrainAt, inHouse: inHouse, canStand: canStand,
-    distToPond: distToPond, placeable: placeable
+    distToPond: distToPond, placeable: placeable,
+    ROOM_W: ROOM_W, ROOM_H: ROOM_H, ROOM_WORLD_W: ROOM_WORLD_W, ROOM_WORLD_H: ROOM_WORLD_H,
+    room: room, roomNpcs: roomNpcs, roomBlockers: roomBlockers,
+    roomCanStand: roomCanStand, roomPlaceable: roomPlaceable, buildRoomCanvas: buildRoomCanvas,
+    doorOut: doorOut
   };
 })();

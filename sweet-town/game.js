@@ -13,6 +13,7 @@
   var app = $('app'), cv = $('game'), ctx = cv.getContext('2d');
   var hudEl = $('hud');
   var coinCountEl = $('coinCount'), coinPill = $('coinPill');
+  var placePill = $('placePill');
   var missionWhoEl = $('missionWho'), missionProgEl = $('missionProg'), missionTextEl = $('missionText');
   var invBar = $('invBar');
   var stickZone = $('stickZone'), stickKnob = $('stickKnob');
@@ -32,16 +33,22 @@
     cotton: { name: '솜사탕' },
     choco: { name: '초코칩' },
     gummy: { name: '구미베어' },
-    starjelly: { name: '별젤리' }
+    starjelly: { name: '별젤리' },
+    cookie: { name: '따뜻한 쿠키' }
   };
   var FURN_NAME = {};
-  W.shop.forEach(function (s) { FURN_NAME[s.id] = s.name; });
+  var FURN_WHERE = {};
+  W.shop.forEach(function (s) { FURN_NAME[s.id] = s.name; FURN_WHERE[s.id] = s.where || 'out'; });
 
   var ICON = {
     talk: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.6 5.4h14.8a1.9 1.9 0 011.9 1.9v7.2a1.9 1.9 0 01-1.9 1.9H9.4l-4.8 3.1V5.4z" fill="#fff" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><circle cx="9" cy="11" r="1.2" fill="#ff9ec4"/><circle cx="12" cy="11" r="1.2" fill="#ff9ec4"/><circle cx="15" cy="11" r="1.2" fill="#ff9ec4"/></svg>',
     pick: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.3 4.8 5.3.8-3.8 3.7.9 5.2L12 15.2l-4.7 2.5.9-5.2L4.4 8.8l5.3-.8z" fill="#fff" stroke="#fff" stroke-width="1.1" stroke-linejoin="round"/></svg>',
     fish: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.4 12c3-4.5 7.1-5.7 10.4-5.7 3.5 0 6.2 2.2 6.8 5.7-.6 3.5-3.3 5.7-6.8 5.7C10.5 17.7 6.4 16.5 3.4 12z" fill="#fff" stroke="#fff" stroke-width="1.3" stroke-linejoin="round"/><path d="M20.2 12l2.4-3.3v6.6z" fill="#fff"/><circle cx="15.8" cy="11" r="1.15" fill="#ff9ec4"/></svg>',
-    shop: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 8h11.6l-1 11.4a1.6 1.6 0 01-1.6 1.4H8.8a1.6 1.6 0 01-1.6-1.4L6.2 8z" fill="#fff" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 8.4a3 3 0 016 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'
+    shop: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 8h11.6l-1 11.4a1.6 1.6 0 01-1.6 1.4H8.8a1.6 1.6 0 01-1.6-1.4L6.2 8z" fill="#fff" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 8.4a3 3 0 016 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+    house: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 11.2L12 4l8.4 7.2" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.6 10.6V20h12.8v-9.4" fill="#fff" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 20v-4.6h4V20" fill="#ffd0e2" stroke="#ff9ec4" stroke-width="1.2"/></svg>',
+    door: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.4 20.2V5.2a1.6 1.6 0 011.6-1.6h7.4a1.6 1.6 0 011.6 1.6v15" fill="#fff" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M5.4 20.2V5.2a1.6 1.6 0 011.6-1.6h7.4a1.6 1.6 0 011.6 1.6v15" fill="none" stroke="#ff9ec4" stroke-width="1.3" stroke-linejoin="round"/><circle cx="12.4" cy="12" r="1.15" fill="#ff9ec4"/><path d="M18.4 9.6l2.4 2.4-2.4 2.4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    oven: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.2" y="5" width="15.6" height="15" rx="3" fill="#fff" stroke="#ff9ec4" stroke-width="1.4"/><rect x="7" y="8.4" width="10" height="7.6" rx="2.4" fill="#ffd9e8" stroke="#ff9ec4" stroke-width="1.2"/><circle cx="15.6" cy="17.6" r="1" fill="#ff9ec4"/><path d="M9.6 3.4h4.8" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>',
+    cake: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.4 20.4h15.2v-6.2c0-2-3.4-3.2-7.6-3.2s-7.6 1.2-7.6 3.2v6.2z" fill="#fff" stroke="#ff9ec4" stroke-width="1.4" stroke-linejoin="round"/><path d="M4.4 17.4c2.4 1.4 4 0 5.2 0s2.6 1.4 4.8 0 3 1 4.8 0" fill="none" stroke="#ffb3d1" stroke-width="1.3" stroke-linecap="round"/><path d="M12 8.4V5.2" stroke="#ffd045" stroke-width="2" stroke-linecap="round"/><path d="M12 5.2c-.9-.9-.2-2 .9-2.2.3.9-.2 1.8-.9 2.2z" fill="#ffb02e"/></svg>'
   };
   var ICON_SOUND = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.4h3.4L12 5.6v12.8L7.4 14.6H4z" fill="currentColor"/><path d="M15.4 8.6a4.6 4.6 0 010 6.8M17.9 6.1a8 8 0 010 11.8" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>';
   var ICON_MUTE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.4h3.4L12 5.6v12.8L7.4 14.6H4z" fill="currentColor"/><path d="M15.4 9.4l4.8 5M20.2 9.4l-4.8 5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>';
@@ -51,11 +58,11 @@
 
   function defaultState() {
     return {
-      v: 1, coins: 10,
-      inv: { candy: 0, marshmallow: 0, cotton: 0, choco: 0, gummy: 0, starjelly: 0 },
-      owned: {}, placed: [], questIdx: 0, stage: 'offer',
+      v: 2, coins: 10,
+      inv: { candy: 0, marshmallow: 0, cotton: 0, choco: 0, gummy: 0, starjelly: 0, cookie: 0 },
+      owned: {}, placed: [], placedIn: [], questIdx: 0, stage: 'offer',
       muted: false, seenIntro: false,
-      px: 15.2, py: 14.7
+      px: 15.2, py: 14.7, scene: 'out'
     };
   }
 
@@ -74,12 +81,21 @@
           return p && typeof p.x === 'number' && typeof p.y === 'number' && typeof p.t === 'string' && FURN_NAME[p.t];
         }).map(function (p) { return { t: p.t, x: Math.round(p.x), y: Math.round(p.y) }; });
       }
+      if (Object.prototype.toString.call(d.placedIn) === '[object Array]') {
+        s.placedIn = d.placedIn.filter(function (p) {
+          return p && typeof p.x === 'number' && typeof p.y === 'number' && typeof p.t === 'string' && FURN_NAME[p.t];
+        }).map(function (p) { return { t: p.t, x: Math.round(p.x), y: Math.round(p.y) }; });
+      }
       if (typeof d.questIdx === 'number' && d.questIdx >= 0) s.questIdx = Math.floor(d.questIdx);
       if (d.stage === 'offer' || d.stage === 'active') s.stage = d.stage;
       if (typeof d.muted === 'boolean') s.muted = d.muted;
       if (typeof d.seenIntro === 'boolean') s.seenIntro = d.seenIntro;
       if (typeof d.px === 'number' && typeof d.py === 'number') {
-        if (W.canStand(d.px, d.py)) { s.px = d.px; s.py = d.py; }
+        var inRoom = d.scene === 'in';
+        if (inRoom ? W.roomCanStand(d.px, d.py) : W.canStand(d.px, d.py)) {
+          s.px = d.px; s.py = d.py;
+          if (inRoom) s.scene = 'in';
+        }
       }
     } catch (e) { /* 저장이 깨졌으면 새로 시작 */ }
     return s;
@@ -91,9 +107,11 @@
   function writeSave() {
     try {
       localStorage.setItem(SAVE_KEY, JSON.stringify({
-        v: 1, coins: S.coins, inv: S.inv, owned: S.owned, placed: S.placed,
+        v: 2, coins: S.coins, inv: S.inv, owned: S.owned,
+        placed: S.placed, placedIn: S.placedIn,
         questIdx: S.questIdx, stage: S.stage, muted: S.muted, seenIntro: S.seenIntro,
-        px: Math.round(S.px * 100) / 100, py: Math.round(S.py * 100) / 100
+        px: Math.round(S.px * 100) / 100, py: Math.round(S.py * 100) / 100,
+        scene: scene
       }));
     } catch (e) { }
   }
@@ -223,16 +241,21 @@
     cv.style.width = w + 'px';
     cv.style.height = h + 'px';
     view.w = w; view.h = h; view.dpr = dpr;
-    view.zoom = clamp(Math.min(w / (10.8 * TILE), h / (10 * TILE)), 0.58, 1.6);
+    if (isIn()) {
+      view.zoom = clamp(Math.min(w / (W.ROOM_WORLD_W * 1.02), h / (W.ROOM_WORLD_H * 1.02)), 0.72, 1.7);
+    } else {
+      view.zoom = clamp(Math.min(w / (10.8 * TILE), h / (10 * TILE)), 0.58, 1.6);
+    }
     cameraClamp();
   }
 
   function cameraClamp() {
     var vw = view.w / view.zoom, vh = view.h / view.zoom;
-    if (vw >= W.WORLD_W) cam.x = W.WORLD_W / 2;
-    else cam.x = clamp(cam.x, vw / 2, W.WORLD_W - vw / 2);
-    if (vh >= W.WORLD_H) cam.y = W.WORLD_H / 2;
-    else cam.y = clamp(cam.y, vh / 2, W.WORLD_H - vh / 2);
+    var ww = mapW() * TILE, wh = mapH() * TILE;
+    if (vw >= ww) cam.x = ww / 2;
+    else cam.x = clamp(cam.x, vw / 2, ww - vw / 2);
+    if (vh >= wh) cam.y = wh / 2;
+    else cam.y = clamp(cam.y, vh / 2, wh - vh / 2);
   }
 
   function s2w(sx, sy) {
@@ -260,6 +283,25 @@
   var introOpen = false, introShown = false;
   var dialogueOpen = false, sheetOpen = false, fishingOpen = false;
   var terrainCanvas = null;
+  var roomCanvas = null;
+  var scene = S.scene === 'in' ? 'in' : 'out';
+  var oven = { cooking: false, done: false, t: 0 };
+
+  function isIn() { return scene === 'in'; }
+  function mapW() { return isIn() ? W.ROOM_W : W.MAP_W; }
+  function mapH() { return isIn() ? W.ROOM_H : W.MAP_H; }
+  function canStand(x, y) { return isIn() ? W.roomCanStand(x, y) : W.canStand(x, y); }
+  function npcList() { return isIn() ? W.roomNpcs : W.npcs; }
+  function placeableAt(tx, ty) { return isIn() ? W.roomPlaceable(tx, ty) : W.placeable(tx, ty); }
+  function placedList() { return isIn() ? S.placedIn : S.placed; }
+  function itemHere(it) {
+    var w = it.where || 'out';
+    return w === 'both' || (isIn() ? w === 'in' : w === 'out');
+  }
+  function npcHere(n) { return !!n && ((n.where === 'in') === isIn()); }
+  function doorPoint() {
+    return isIn() ? { x: W.room.door.x, y: W.room.door.y - 0.85 } : { x: W.doorOut.x, y: W.doorOut.y };
+  }
 
   /* ---------------- 미션 ---------------- */
 
@@ -272,20 +314,25 @@
     var n = W.npcById[id];
     return n ? { x: n.x, y: n.y } : null;
   }
-  function placedCount(type) {
+  function placedCount(type, room) {
+    var arr = room ? S.placedIn : S.placed;
     var c = 0;
-    for (var i = 0; i < S.placed.length; i++) if (S.placed[i].t === type) c++;
+    for (var i = 0; i < arr.length; i++) if (arr[i].t === type) c++;
     return c;
   }
   function questProgress(q) {
     if (!q) return 0;
-    if (q.kind === 'place') return placedCount(q.item);
+    if (q.kind === 'place') return placedCount(q.item, !!q.room);
     return S.inv[q.item] || 0;
   }
   function questReady(q) {
     if (!q) return false;
-    if (q.kind === 'place') return placedCount(q.item) > 0;
+    if (q.kind === 'place') return placedCount(q.item, !!q.room) > 0;
     return (S.inv[q.item] || 0) >= q.need;
+  }
+  function whereTag(id) {
+    var n = W.npcById[id];
+    return n && n.where === 'in' ? ' (과자집 안)' : '';
   }
 
   function updateMission() {
@@ -298,7 +345,7 @@
     if (S.stage === 'offer') {
       missionWhoEl.textContent = giverName + '의 부탁';
       missionProgEl.textContent = '새 부탁';
-      missionTextEl.textContent = giverName + '에게 가서 말을 걸어 보세요!';
+      missionTextEl.textContent = giverName + '에게 가서 말을 걸어 보세요!' + whereTag(q.giver);
       return;
     }
     missionWhoEl.textContent = giverName + '의 부탁';
@@ -307,18 +354,18 @@
       missionProgEl.textContent = have > 0 ? '완료' : '0/1';
       missionTextEl.textContent = have > 0
         ? '놓았어요! ' + giverName + '에게 알려 주세요!'
-        : FURN_NAME[q.item] + '을(를) 상점에서 사서 빈 땅에 놓아 주세요';
+        : FURN_NAME[q.item] + '을(를) 상점에서 사서 ' + (q.room ? '과자집 안에서 ' : '마을 빈 땅에 ') + '꾸미기로 놓아 주세요';
       return;
     }
 
     missionProgEl.textContent = Math.min(have, q.need) + '/' + q.need;
     if (q.kind === 'deliver') {
       missionTextEl.textContent = have >= q.need
-        ? name + ' ' + q.need + '개를 ' + nameOf(q.to) + '에게 전해 주세요!'
+        ? name + ' ' + q.need + '개를 ' + nameOf(q.to) + '에게 전해 주세요!' + whereTag(q.to)
         : name + ' ' + q.need + '개를 모아요';
     } else {
       missionTextEl.textContent = have >= q.need
-        ? name + ' ' + q.need + '개를 ' + giverName + '에게 가져다주세요!'
+        ? name + ' ' + q.need + '개를 ' + giverName + '에게 가져다주세요!' + whereTag(q.giver)
         : name + ' ' + q.need + '개를 모아요';
     }
   }
@@ -612,9 +659,9 @@
   function drawDecoGrid(t) {
     var vw = view.w / view.zoom, vh = view.h / view.zoom;
     var x0 = Math.max(0, Math.floor((cam.x - vw / 2) / TILE) - 1);
-    var x1 = Math.min(W.MAP_W - 1, Math.ceil((cam.x + vw / 2) / TILE));
+    var x1 = Math.min(mapW() - 1, Math.ceil((cam.x + vw / 2) / TILE));
     var y0 = Math.max(0, Math.floor((cam.y - vh / 2) / TILE) - 1);
-    var y1 = Math.min(W.MAP_H - 1, Math.ceil((cam.y + vh / 2) / TILE));
+    var y1 = Math.min(mapH() - 1, Math.ceil((cam.y + vh / 2) / TILE));
     ctx.save();
     ctx.fillStyle = 'rgba(255,244,250,.16)';
     ctx.fillRect(x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE);
@@ -622,7 +669,7 @@
     ctx.lineWidth = 1.6 / Math.max(0.8, view.zoom);
     for (var ty = y0; ty <= y1; ty++) {
       for (var tx = x0; tx <= x1; tx++) {
-        if (!W.placeable(tx, ty)) continue;
+        if (!placeableAt(tx, ty)) continue;
         ctx.strokeStyle = 'rgba(255,255,255,.72)';
         ctx.strokeRect(tx * TILE + 4, ty * TILE + 4, TILE - 8, TILE - 8);
       }
@@ -638,6 +685,18 @@
     ctx.scale(view.zoom, view.zoom);
     ctx.translate(-cam.x, -cam.y);
 
+    if (isIn()) drawRoomScene(t);
+    else drawWorldScene(t);
+
+    drawParts();
+    drawFloats();
+    drawArrow(t);
+    if (deco.on) drawDecoGrid(t);
+
+    ctx.restore();
+  }
+
+  function drawWorldScene(t) {
     ctx.fillStyle = '#c9e9b8';
     ctx.fillRect(0, 0, W.WORLD_W, W.WORLD_H);
     if (terrainCanvas) ctx.drawImage(terrainCanvas, 0, 0);
@@ -666,7 +725,8 @@
         var bx = npc.x * TILE, by = npc.y * TILE;
         list.push({
           y: by, f: function () {
-            A.drawAnimal(ctx, npc.kind, bx, by, 1.12, t, npc.face);
+            if (npc.kind === 'kid') A.drawKid(ctx, npc.kid, bx, by, 1.06, t, false, npc.face);
+            else A.drawAnimal(ctx, npc.kind, bx, by, 1.12, t, npc.face);
             drawNpcLabel(npc, bx, by);
           }
         });
@@ -680,18 +740,80 @@
     list.sort(function (a, b) { return a.y - b.y; });
     for (i = 0; i < list.length; i++) list[i].f();
 
-    // 부탁 표시
     var targetId = questTargetNpc();
     if (targetId) {
       var npc = W.npcById[targetId];
-      if (npc) A.drawMarker(ctx, npc.x * TILE, npc.y * TILE - 74, t);
+      if (npc && npcHere(npc)) A.drawMarker(ctx, npc.x * TILE, npc.y * TILE - 74, t);
     }
+  }
 
-    drawParts();
-    drawFloats();
-    drawArrow(t);
-    if (deco.on) drawDecoGrid(t);
+  function drawRoomScene(t) {
+    ctx.fillStyle = '#ffe4ef';
+    ctx.fillRect(0, 0, W.ROOM_WORLD_W, W.ROOM_WORLD_H);
+    if (roomCanvas) ctx.drawImage(roomCanvas, 0, 0);
 
+    var list = [];
+    var heat = oven.cooking ? Math.min(1, oven.t / 2.0) : (oven.done ? 1 : 0);
+    list.push({ y: W.room.fire.y * TILE, f: function () { A.drawFireplace(ctx, W.room.fire.x * TILE, W.room.fire.y * TILE, 1, t); } });
+    list.push({ y: W.room.oven.y * TILE, f: function () { A.drawCookieOven(ctx, W.room.oven.x * TILE, W.room.oven.y * TILE, 1.04, t, heat); } });
+    list.push({ y: W.room.cake.y * TILE, f: function () { A.drawCakeTable(ctx, W.room.cake.x * TILE, W.room.cake.y * TILE, 1.04, t); } });
+    list.push({ y: W.room.bed.y * TILE, f: function () { A.drawCottonBed(ctx, W.room.bed.x * TILE, W.room.bed.y * TILE, 1.02, t); } });
+
+    var i;
+    for (i = 0; i < S.placedIn.length; i++) {
+      (function (p) {
+        var bx = (p.x + 0.5) * TILE, by = (p.y + 0.95) * TILE;
+        list.push({ y: by, f: function () { A.drawFurniture(ctx, p.t, bx, by, 1.02, t); } });
+      })(S.placedIn[i]);
+    }
+    for (i = 0; i < W.roomNpcs.length; i++) {
+      (function (npc) {
+        var bx = npc.x * TILE, by = npc.y * TILE;
+        list.push({
+          y: by, f: function () {
+            A.drawKid(ctx, npc.kid, bx, by, 1.06, t, false, npc.face);
+            drawNpcLabel(npc, bx, by);
+          }
+        });
+      })(W.roomNpcs[i]);
+    }
+    list.push({
+      y: S.py * TILE, f: function () {
+        A.drawGirl(ctx, S.px * TILE, S.py * TILE, 1.06, t, walk.anim > 0, S.dir);
+      }
+    });
+    list.sort(function (a, b) { return a.y - b.y; });
+    for (i = 0; i < list.length; i++) list[i].f();
+
+    var targetId = questTargetNpc();
+    if (targetId) {
+      var tn = W.npcById[targetId];
+      if (tn && npcHere(tn)) A.drawMarker(ctx, tn.x * TILE, tn.y * TILE - 74, t);
+    }
+    drawOvenBadge(t);
+  }
+
+  function drawOvenBadge(t) {
+    if (!oven.cooking && !oven.done) return;
+    var bx = W.room.oven.x * TILE, by = W.room.oven.y * TILE - 112;
+    ctx.save();
+    if (oven.cooking) {
+      var p = Math.min(1, oven.t / 2.0);
+      ctx.fillStyle = 'rgba(255,252,248,.95)';
+      A.rr(ctx, bx - 27, by - 10, 54, 20, 10);
+      ctx.fill();
+      ctx.strokeStyle = '#ffd9e8';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.fillStyle = '#ffe4ee';
+      A.rr(ctx, bx - 22, by - 5, 44, 10, 5);
+      ctx.fill();
+      ctx.fillStyle = '#ff9ec4';
+      A.rr(ctx, bx - 22, by - 5, 44 * p, 10, 5);
+      ctx.fill();
+    } else {
+      A.drawSweet(ctx, 'cookie', bx, by + Math.sin(t * 3) * 2, 26, t);
+    }
     ctx.restore();
   }
 
@@ -701,12 +823,23 @@
     var q = curQuest();
     if (!q) return null;
     if (S.stage === 'offer') return q.giver;
-    if (q.kind === 'place') return placedCount(q.item) > 0 ? q.giver : null;
+    if (q.kind === 'place') return questProgress(q) > 0 ? q.giver : null;
     if (q.kind === 'deliver') return (S.inv[q.item] || 0) >= q.need ? q.to : null;
     return (S.inv[q.item] || 0) >= q.need ? q.giver : null;
   }
 
+  function npcTarget(id) {
+    var n = W.npcById[id];
+    if (!n) return null;
+    if (npcHere(n)) return { x: n.x, y: n.y };
+    return doorPoint();
+  }
+
   function sourcePoint(item) {
+    if (item === 'cookie' || item === 'cupcake') {
+      return isIn() ? { x: W.room.oven.x, y: W.room.oven.y + 0.55 } : doorPoint();
+    }
+    if (isIn()) return doorPoint();
     if (item === 'gummy' || item === 'starjelly') {
       return { x: W.pond.cx - W.pond.rx - 0.8, y: W.pond.cy + 0.6 };
     }
@@ -731,13 +864,13 @@
   function arrowTarget() {
     var q = curQuest();
     if (!q) return null;
-    if (S.stage === 'offer') return npcPoint(q.giver);
-    if (q.kind === 'place') return placedCount(q.item) > 0 ? npcPoint(q.giver) : null;
+    if (S.stage === 'offer') return npcTarget(q.giver);
+    if (q.kind === 'place') return questProgress(q) > 0 ? npcTarget(q.giver) : null;
     if (q.kind === 'deliver') {
-      if ((S.inv[q.item] || 0) >= q.need) return npcPoint(q.to);
+      if ((S.inv[q.item] || 0) >= q.need) return npcTarget(q.to);
       return sourcePoint(q.item);
     }
-    if ((S.inv[q.item] || 0) >= q.need) return npcPoint(q.giver);
+    if ((S.inv[q.item] || 0) >= q.need) return npcTarget(q.giver);
     return sourcePoint(q.item);
   }
 
@@ -749,15 +882,15 @@
 
   function buildGrid() {
     grid = [];
-    for (var y = 0; y < W.MAP_H; y++) {
+    for (var y = 0; y < mapH(); y++) {
       var row = [];
-      for (var x = 0; x < W.MAP_W; x++) row.push(W.canStand(x + 0.5, y + 0.5) ? 1 : 0);
+      for (var x = 0; x < mapW(); x++) row.push(canStand(x + 0.5, y + 0.5) ? 1 : 0);
       grid.push(row);
     }
   }
 
   function walkableTile(tx, ty) {
-    return ty >= 0 && ty < W.MAP_H && tx >= 0 && tx < W.MAP_W && grid[ty][tx] === 1;
+    return ty >= 0 && ty < mapH() && tx >= 0 && tx < mapW() && grid[ty][tx] === 1;
   }
 
   function nearestWalkableTile(tx, ty) {
@@ -779,7 +912,7 @@
     var steps = Math.max(1, Math.ceil(len / 0.28));
     for (var i = 1; i <= steps; i++) {
       var t = i / steps;
-      if (!W.canStand(ax + dx * t, ay + dy * t)) return false;
+      if (!canStand(ax + dx * t, ay + dy * t)) return false;
     }
     return true;
   }
@@ -840,8 +973,8 @@
   }
 
   function setWalkTarget(tx, ty) {
-    tx = clamp(tx, 0.8, W.MAP_W - 0.8);
-    ty = clamp(ty, 0.8, W.MAP_H - 0.8);
+    tx = clamp(tx, 0.8, mapW() - 0.8);
+    ty = clamp(ty, 0.8, mapH() - 0.8);
     var path = findPath(S.px, S.py, tx, ty);
     if (!path) return;
     if (!path.length) {
@@ -850,7 +983,7 @@
       return;
     }
     var last = path[path.length - 1];
-    if (W.canStand(tx, ty)) path.push({ x: tx, y: ty });
+    if (canStand(tx, ty)) path.push({ x: tx, y: ty });
     else if (last) { /* 타일 중앙에서 멈춤 */ }
     walk.path = smoothPath(path, S.px, S.py);
     walk.target = { x: tx, y: ty };
@@ -883,8 +1016,8 @@
       var sp = 3.2;
       var nx = S.px + vx * sp * dt, ny = S.py + vy * sp * dt;
       var moved = false;
-      if (W.canStand(nx, S.py)) { S.px = nx; moved = true; }
-      if (W.canStand(S.px, ny)) { S.py = ny; moved = true; }
+      if (canStand(nx, S.py)) { S.px = nx; moved = true; }
+      if (canStand(S.px, ny)) { S.py = ny; moved = true; }
       if (!moved) {
         walk.blocked += dt;
         if (walk.blocked > 0.3 && walk.path && walk.path.length > 1) {
@@ -909,28 +1042,29 @@
     }
 
     // 동물 친구 산책
-    for (var i = 0; i < W.npcs.length; i++) {
-      var n = W.npcs[i];
+    for (var i = 0; i < npcList().length; i++) {
+      var n = npcList()[i];
       if (!n.wander) continue;
       var ndx = n.tx - n.x, ndy = n.ty - n.y;
       var nd = Math.sqrt(ndx * ndx + ndy * ndy);
       if (nd < 0.15) {
         n.wait -= dt;
         if (n.wait <= 0) {
-          n.tx = clamp(n.home.x + (Math.random() * 2 - 1) * n.wander, 1, W.MAP_W - 1);
-          n.ty = clamp(n.home.y + (Math.random() * 2 - 1) * n.wander * 0.6, 1, W.MAP_H - 1);
+          n.tx = clamp(n.home.x + (Math.random() * 2 - 1) * n.wander, 1, mapW() - 1);
+          n.ty = clamp(n.home.y + (Math.random() * 2 - 1) * n.wander * 0.6, 1, mapH() - 1);
           n.wait = 1.6 + Math.random() * 3.2;
         }
       } else {
         var sp2 = 0.62;
         var ax = n.x + (ndx / nd) * sp2 * dt, ay = n.y + (ndy / nd) * sp2 * dt;
-        if (W.canStand(ax, ay)) { n.x = ax; n.y = ay; }
+        if (canStand(ax, ay)) { n.x = ax; n.y = ay; }
         else { n.tx = n.x; n.ty = n.y; }
         if (Math.abs(ndx) > 0.05) n.face = ndx > 0 ? 'right' : 'left';
       }
     }
 
     updateParts(dt);
+    updateOven(dt);
     updateInteract();
 
     // 카메라
@@ -951,12 +1085,32 @@
     }
     var best = null, i;
 
-    for (i = 0; i < W.npcs.length; i++) {
-      var n = W.npcs[i];
-      var dn = dist(n.x, n.y, S.px, S.py);
-      if (dn < 1.95 && (!best || dn < best.d)) best = { d: dn, kind: 'talk', target: n };
+    if (isIn()) {
+      // 문 (나가기)
+      if (dist(W.room.door.x, W.room.door.y - 0.65, S.px, S.py) < 0.95) {
+        best = { d: 0, kind: 'exit', target: null };
+      }
+      // 오븐
+      var dOven = dist(W.room.oven.x, W.room.oven.y + 0.35, S.px, S.py);
+      if (dOven < 1.85 && (!best || dOven < best.d)) best = { d: dOven, kind: 'oven', target: null };
+      // 케이크 테이블
+      var dCake = dist(W.room.cake.x, W.room.cake.y + 0.35, S.px, S.py);
+      if (dCake < 1.55 && (!best || dCake < best.d)) best = { d: dCake, kind: 'cake', target: null };
+    } else {
+      // 과자집 문 (들어가기)
+      if (dist(W.doorOut.x, W.doorOut.y, S.px, S.py) < 1.55) {
+        best = { d: 0, kind: 'enter', target: null };
+      }
     }
-    if (!best) {
+
+    // 친구
+    for (i = 0; i < npcList().length; i++) {
+      var n = npcList()[i];
+      var dn = dist(n.x, n.y, S.px, S.py);
+      if (dn < 1.9 && (!best || dn < best.d)) best = { d: dn, kind: 'talk', target: n };
+    }
+    // 마을 간식 줍기
+    if (!isIn() && !best) {
       for (i = 0; i < W.props.length; i++) {
         var p = W.props[i];
         if (!p.item) continue;
@@ -964,7 +1118,7 @@
         if (dp < 1.5 && (!best || dp < best.d)) best = { d: dp, kind: 'gather', target: p };
       }
     }
-    if (!best && W.distToPond(S.px, S.py) < 2.2) {
+    if (!isIn() && !best && W.distToPond(S.px, S.py) < 2.2) {
       best = { d: 0, kind: 'fish', target: null };
     }
 
@@ -974,6 +1128,14 @@
     if (hint.kind === 'talk') setActButton('말 걸기', ICON.talk);
     else if (hint.kind === 'gather') setActButton('줍기', ICON.pick);
     else if (hint.kind === 'fish') setActButton('낚시', ICON.fish);
+    else if (hint.kind === 'enter') setActButton('집에 들어가기', ICON.house);
+    else if (hint.kind === 'exit') setActButton('마을로 나가기', ICON.door);
+    else if (hint.kind === 'oven') {
+      if (oven.cooking) setActButton('기다리는 중', ICON.oven);
+      else if (oven.done) setActButton('쿠키 꺼내기', ICON.oven);
+      else setActButton('쿠키 굽기', ICON.oven);
+    } else if (hint.kind === 'cake') setActButton('케이크 먹기', ICON.cake);
+    else if (isIn()) setActButton('말 걸기', ICON.talk);
     else setActButton('말 걸기', ICON.talk);
   }
 
@@ -1015,7 +1177,7 @@
     c.style.width = size + 'px'; c.style.height = size + 'px';
     var g = c.getContext('2d');
     g.scale(dpr, dpr);
-    A.drawAnimal(g, npc.kind, size / 2, size - 1, 0.74, 0, npc.face);
+    A.drawKid(g, npc.kid, size / 2, size - 2, 0.92, 0, false, npc.face);
     return c;
   }
 
@@ -1053,13 +1215,121 @@
     somsom: ['오늘 마을이 정말 달콤해!', '엘리야, 나랑 같이 놀자!', '롤리팝 나무가 반짝반짝 빛나고 있어!', '솜솜은 폭신폭신 솜사탕을 좋아해!'],
     koko: ['폴폴~ 마시멜로 냄새가 좋아!', '엘리, 오늘도 반가워!', '과자집 창문은 젤리로 만들어졌대!', '초콜릿 길을 걸으면 기분이 좋아져!'],
     jelly: ['야옹~ 연못에서 통통 구미베어가 헤엄쳐!', '엘리, 낚시 잘해? 별젤리도 있어!', '젤리 연못은 만지면 말랑말랑해!', '고양이 젤리는 마시멜로를 제일 좋아해!'],
-    ppiak: ['삐약삐약!', '나는 초코칩을 모으고 있어!', '엘리랑 놀면 정말 재미있어!', '과자집 지붕은 딸기 맛이래!']
+    ppiak: ['삐약삐약!', '나는 초코칩을 모으고 있어!', '엘리랑 놀면 정말 재미있어!', '과자집 지붕은 딸기 맛이래!'],
+    momo: ['엘리야! 과자집 안은 내가 제일 좋아하는 곳이야!', '쿠키 오븐에서 달콤한 냄새가 나!', '케이크 테이블에 앉아서 같이 먹자!'],
+    luna: ['엘리, 안녕! 나는 루나야. 무지개 사탕 좋아해?', '과자집 지붕은 정말 딸기 맛일까?', '같이 마을 한 바퀴 돌까?'],
+    haru: ['엘리! 나는 하루야. 과자집 문을 열면 달콤한 방이 나와!', '쿠키 냄새가 솔솔 나는 것 같아!', '우리 같이 쿠키 먹을까?'],
+    bora: ['나는 보라야! 연못에서 반짝이는 별젤리를 봤어!', '엘리, 네 리본 정말 예뻐!', '무지개 사탕 아치는 어때?']
   };
 
   function idleTalk(npc) {
     var lines = IDLE[npc.id] || ['안녕!'];
     var line = lines[Math.floor(Math.random() * lines.length)];
     showDialogue(npc, line, [['또 만나요!', closeDialogue, true]]);
+  }
+
+  /* ---------------- 과자집 드나들기 ---------------- */
+
+  function updatePlacePill() {
+    if (!placePill) return;
+    if (isIn()) {
+      placePill.hidden = false;
+      placePill.textContent = '과자집 안';
+    } else {
+      placePill.hidden = true;
+    }
+  }
+
+  function enterHouse() {
+    if (isIn()) return;
+    scene = 'in';
+    S.scene = 'in';
+    S.px = W.room.enter.x;
+    S.py = W.room.enter.y;
+    S.dir = 'up';
+    walk.path = []; walk.target = null; camHold = false;
+    if (dialogueOpen) closeDialogue();
+    buildGrid();
+    resize();
+    cam.x = S.px * TILE;
+    cam.y = S.py * TILE;
+    cameraClamp();
+    updateInteract();
+    updatePlacePill();
+    Sound.success();
+    addSparkles(S.px * TILE, S.py * TILE - 20, 10);
+    toast('과자집 안에 들어왔어요! 냠냠', 'gold');
+    save();
+    updateHud();
+  }
+
+  function exitHouse() {
+    if (!isIn()) return;
+    scene = 'out';
+    S.scene = 'out';
+    S.px = W.doorOut.x;
+    S.py = W.doorOut.y + 0.35;
+    S.dir = 'down';
+    walk.path = []; walk.target = null; camHold = false;
+    buildGrid();
+    resize();
+    cam.x = S.px * TILE;
+    cam.y = S.py * TILE;
+    cameraClamp();
+    updateInteract();
+    updatePlacePill();
+    Sound.blip();
+    toast('마을로 나왔어요!');
+    save();
+    updateHud();
+  }
+
+  /* ---------------- 과자집 안: 쿠키 오븐과 케이크 ---------------- */
+
+  function ovenPress() {
+    Sound.unlock();
+    if (oven.cooking) {
+      toast('아직 따뜻해지지 않았어요. 조금만 기다려 주세요!');
+      Sound.nope();
+      return;
+    }
+    if (oven.done) {
+      S.inv.cookie = (S.inv.cookie || 0) + 1;
+      oven.done = false;
+      oven.t = 0;
+      var bx = W.room.oven.x * TILE, by = W.room.oven.y * TILE - 40;
+      addConfetti(bx, by, 18);
+      addFloat(bx, by - 44, '따뜻한 쿠키 +1', '#a3557f');
+      Sound.coin();
+      Sound.pop();
+      save();
+      updateHud();
+      toast('따뜻한 쿠키를 꺼냈어요! 냠냠', 'gold');
+      return;
+    }
+    oven.cooking = true;
+    oven.t = 0;
+    Sound.blip();
+    toast('오븐에 쿠키를 넣었어요! 따뜻해질 때까지 기다려요');
+  }
+
+  function updateOven(dt) {
+    if (!oven.cooking) return;
+    oven.t += dt;
+    if (oven.t >= 2.0) {
+      oven.cooking = false;
+      oven.done = true;
+      Sound.success();
+      addSparkles(W.room.oven.x * TILE, W.room.oven.y * TILE - 30, 8);
+      toast('따뜻한 쿠키가 다 구워졌어요! 오븐을 다시 눌러 꺼내요', 'gold');
+    }
+  }
+
+  function cakeEat() {
+    Sound.pop();
+    addSparkles(W.room.cake.x * TILE, W.room.cake.y * TILE - 44, 8);
+    addSparkles(W.room.cake.x * TILE, W.room.cake.y * TILE - 44, 4);
+    showDialogue(null, '딸기 케이크 한 조각을 냠! 달콤하고 폭신해요. 기분이 아주 좋아졌어요!', [['냠냠!', closeDialogue, true]]);
   }
 
   function talkTo(npc) {
@@ -1345,6 +1615,11 @@
         nm.textContent = it.name;
         card.appendChild(nm);
 
+        var tag = document.createElement('div');
+        tag.className = 'shop-where';
+        tag.textContent = it.where === 'in' ? '과자집 안' : (it.where === 'both' ? '어디든' : '마을');
+        card.appendChild(tag);
+
         var ds = document.createElement('div');
         ds.className = 'shop-desc';
         ds.textContent = it.desc;
@@ -1368,7 +1643,7 @@
     sheetBody.appendChild(grid);
     var note = document.createElement('div');
     note.className = 'help-note';
-    note.textContent = '산 가구는 아래 꾸미기 버튼을 눌러 마을에 놓을 수 있어요.';
+    note.textContent = '산 가구는 꾸미기로 놓을 수 있어요. \'과자집 안\' 가구는 집 안에서 놓아요!';
     sheetBody.appendChild(note);
   }
 
@@ -1414,6 +1689,10 @@
   }
 
   function firstOwned() {
+    for (var i = 0; i < W.shop.length; i++) {
+      var it = W.shop[i];
+      if ((S.owned[it.id] || 0) > 0 && itemHere(it)) return it.id;
+    }
     for (var k in S.owned) if (S.owned[k] > 0) return k;
     return null;
   }
@@ -1426,6 +1705,7 @@
       var it = W.shop[i];
       var cnt = S.owned[it.id] || 0;
       if (cnt <= 0) continue;
+      if (!itemHere(it)) continue;
       any = true;
       (function (it, cnt) {
         var b = document.createElement('button');
@@ -1469,14 +1749,15 @@
   function decoTap(sx, sy) {
     var wp = s2w(sx, sy);
     var tx = Math.floor(wp.x / TILE), ty = Math.floor(wp.y / TILE);
-    if (tx < 0 || ty < 0 || tx >= W.MAP_W || ty >= W.MAP_H) return;
+    if (tx < 0 || ty < 0 || tx >= mapW() || ty >= mapH()) return;
+    var arr = placedList();
 
     var existing = null;
-    for (var i = 0; i < S.placed.length; i++) {
-      if (S.placed[i].x === tx && S.placed[i].y === ty) { existing = S.placed[i]; break; }
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i].x === tx && arr[i].y === ty) { existing = arr[i]; break; }
     }
     if (existing) {
-      S.placed.splice(S.placed.indexOf(existing), 1);
+      arr.splice(arr.indexOf(existing), 1);
       S.owned[existing.t] = (S.owned[existing.t] || 0) + 1;
       deco.sel = existing.t;
       Sound.pop();
@@ -1490,16 +1771,23 @@
       if (!f) { toast('상점에서 가구를 먼저 사 보세요!'); return; }
       deco.sel = f;
     }
+    var selIt = null;
+    for (var s = 0; s < W.shop.length; s++) if (W.shop[s].id === deco.sel) selIt = W.shop[s];
+    if (selIt && !itemHere(selIt)) {
+      toast(selIt.name + '은(는) ' + (isIn() ? '마을에서' : '과자집 안에서') + ' 놓을 수 있어요');
+      Sound.nope();
+      return;
+    }
     if ((S.owned[deco.sel] || 0) <= 0) {
       toast('그 가구는 다 놓았어요!');
       return;
     }
-    if (!W.placeable(tx, ty)) {
+    if (!placeableAt(tx, ty)) {
       toast('여기에는 놓을 수 없어요. 다른 곳을 눌러 보세요');
       Sound.nope();
       return;
     }
-    S.placed.push({ t: deco.sel, x: tx, y: ty });
+    arr.push({ t: deco.sel, x: tx, y: ty });
     S.owned[deco.sel]--;
     Sound.place();
     addSparkles((tx + 0.5) * TILE, (ty + 0.5) * TILE, 6);
@@ -1507,16 +1795,16 @@
     buildDecoBar();
     updateHud();
 
-    // 가로등 부탁 완료
+    // 가구 놓기 부탁 완료
     var q = curQuest();
-    if (q && S.stage === 'active' && q.kind === 'place' && placedCount(q.item) > 0) {
+    if (q && S.stage === 'active' && q.kind === 'place' && questProgress(q) > 0 && (!!q.room === isIn())) {
       S.coins += q.coins;
       S.questIdx++;
       S.stage = 'offer';
       Sound.success();
       Sound.coin();
       celebrateAt((tx + 0.5) * TILE, (ty + 0.5) * TILE - 20, q.coins);
-      toast('마을이 반짝반짝! ' + nameOf(q.giver) + '가 기뻐해요. ★ +' + q.coins, 'gold');
+      toast((isIn() ? '과자집이' : '마을이') + ' 반짝반짝! ' + nameOf(q.giver) + '가 기뻐해요. ★ +' + q.coins, 'gold');
       save();
       updateHud();
     }
@@ -1531,12 +1819,14 @@
     ul.className = 'help-list';
     var tips = [
       '<b>톡 누르면 걸어가요.</b> 가고 싶은 곳을 화면에서 콕 누르면 엘리가 걸어가요.',
-      '<b>동물 친구에게 말을 걸어요.</b> 친구 가까이 가면 오른쪽 아래 커다란 버튼이 <b>말 걸기</b>로 바뀌어요.',
+      '<b>친구에게 말을 걸어요.</b> 동물 친구와 꼬마 친구 가까이 가면 오른쪽 아래 커다란 버튼이 <b>말 걸기</b>로 바뀌어요.',
       '<b>간식을 모아요.</b> 롤리팝 나무와 솜사탕 덤불, 마시멜로 덤불 가까이 가서 <b>줍기</b>를 눌러요.',
       '<b>연못에서 낚시해요.</b> 젤리 연못 가까이 가서 <b>낚시</b>를 누르고, 초록색 칸에 올 때 <b>톡!</b>',
-      '<b>별 코인으로 상점에서 가구를 사요.</b> 왼쪽 아래 <b>상점</b> 버튼을 눌러요.',
-      '<b>꾸미기</b>를 누르면 점선 칸을 톡 눌러 가구를 놓거나 다시 가져올 수 있어요.',
-      '놀이는 폰에 저절로 저장돼요. 껐다 켜도 우리 마을이 그대로 남아 있어요.'
+      '<b>과자집에 들어가요.</b> 과자집 문 앞에서 <b>집에 들어가기</b>를 누르면 집 안으로 들어가요. 안에서 <b>마을로 나가기</b>를 누르면 나와요.',
+      '<b>집 안 쿠키를 구워요.</b> 쿠키 오븐 앞에서 <b>쿠키 굽기</b>를 누르고, 조금 기다렸다가 <b>쿠키 꺼내기</b>를 눌러요.',
+      '<b>별 코인으로 상점에서 가구를 사요.</b> 마을 가구와 과자집 안 가구가 있어요.',
+      '<b>꾸미기</b>를 누르면 점선 칸을 톡 눌러 가구를 놓거나 다시 가져올 수 있어요. 집 안과 마을은 따로 저장돼요.',
+      '놀이는 폰에 저절로 저장돼요. 껐다 켜도 우리 마을과 과자집이 그대로 남아 있어요.'
     ];
     for (var i = 0; i < tips.length; i++) {
       var li = document.createElement('li');
@@ -1634,7 +1924,11 @@
     if (hint.kind === 'talk' && hint.target) talkTo(hint.target);
     else if (hint.kind === 'gather' && hint.target) gather(hint.target);
     else if (hint.kind === 'fish') openFishing();
-    else toast('동물 친구나 간식 나무 가까이 가 보세요!');
+    else if (hint.kind === 'enter') enterHouse();
+    else if (hint.kind === 'exit') exitHouse();
+    else if (hint.kind === 'oven') ovenPress();
+    else if (hint.kind === 'cake') cakeEat();
+    else toast(isIn() ? '과자집 문 앞이나 오븐, 모모에게 가까이 가 봐요!' : '동물 친구나 간식 나무 가까이 가 보세요!');
   });
 
   btnShop.addEventListener('click', function () { Sound.unlock(); openShop(); });
@@ -1721,10 +2015,11 @@
   function init() {
     resize();
     terrainCanvas = W.buildTerrainCanvas();
+    roomCanvas = W.buildRoomCanvas();
     buildGrid();
     cam.x = S.px * TILE;
     cam.y = S.py * TILE;
-    if (!S.seenIntro) {
+    if (!S.seenIntro && !isIn()) {
       camHold = true;
       cam.x = W.houseAnchor.x;
       cam.y = W.houseAnchor.y - 130;
@@ -1732,6 +2027,7 @@
     cameraClamp();
     updateHud();
     updateInteract();
+    updatePlacePill();
     lastCoins = S.coins;
 
     if (S.seenIntro) {
@@ -1754,14 +2050,15 @@
   window.__st = function () {
     var q = curQuest();
     return {
-      coins: S.coins, inv: S.inv, owned: S.owned, placed: S.placed,
+      coins: S.coins, inv: S.inv, owned: S.owned, placed: S.placed, placedIn: S.placedIn,
       px: Math.round(S.px * 100) / 100, py: Math.round(S.py * 100) / 100,
       camX: Math.round(cam.x), camY: Math.round(cam.y), zoom: Math.round(view.zoom * 1000) / 1000,
-      viewW: view.w, viewH: view.h,
+      viewW: view.w, viewH: view.h, scene: scene,
       walk: walk.target ? { x: Math.round(walk.target.x * 100) / 100, y: Math.round(walk.target.y * 100) / 100 } : null,
       questIdx: S.questIdx, stage: S.stage, quest: q ? q.title : null,
       hint: hint.kind, deco: deco.on, sel: deco.sel, fishing: fishingOpen,
       dialogue: dialogueOpen, sheet: sheetOpen, intro: introOpen,
+      oven: { cooking: oven.cooking, done: oven.done, t: Math.round(oven.t * 100) / 100 },
       muted: Sound.muted
     };
   };
