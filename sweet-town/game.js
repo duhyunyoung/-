@@ -669,14 +669,14 @@
     var y0 = Math.max(0, Math.floor((cam.y - vh / 2) / TILE) - 1);
     var y1 = Math.min(mapH() - 1, Math.ceil((cam.y + vh / 2) / TILE));
     ctx.save();
-    ctx.fillStyle = 'rgba(255,244,250,.16)';
+    ctx.fillStyle = isIn() ? 'rgba(255,214,232,.16)' : 'rgba(255,244,250,.16)';
     ctx.fillRect(x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE);
     ctx.setLineDash([5, 5]);
     ctx.lineWidth = 1.6 / Math.max(0.8, view.zoom);
     for (var ty = y0; ty <= y1; ty++) {
       for (var tx = x0; tx <= x1; tx++) {
         if (!placeableAt(tx, ty)) continue;
-        ctx.strokeStyle = 'rgba(255,255,255,.72)';
+        ctx.strokeStyle = isIn() ? 'rgba(240,120,170,.8)' : 'rgba(255,255,255,.72)';
         ctx.strokeRect(tx * TILE + 4, ty * TILE + 4, TILE - 8, TILE - 8);
       }
     }
